@@ -1,56 +1,53 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Professional
- * 
- * @property int $id
- * @property int $user_id
- * @property string $profession
- * @property string|null $license_number
- * @property string|null $bio
- * @property bool|null $is_available
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * 
- * @property User $user
- * @property Collection|Appointment[] $appointments
  *
- * @package App\Models
+ * @property $id
+ * @property $user_id
+ * @property $profession
+ * @property $license_number
+ * @property $bio
+ * @property $is_available
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property User $user
+ * @property Appointment[] $appointments
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Professional extends Model
 {
-	protected $table = 'professionals';
+    
+    protected $perPage = 20;
 
-	protected $casts = [
-		'user_id' => 'int',
-		'is_available' => 'bool'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['user_id', 'profession', 'license_number', 'bio', 'is_available'];
 
-	protected $fillable = [
-		'user_id',
-		'profession',
-		'license_number',
-		'bio',
-		'is_available'
-	];
 
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
-
-	public function appointments()
-	{
-		return $this->hasMany(Appointment::class);
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id', 'id');
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function appointments()
+    {
+        return $this->hasMany(\App\Models\Appointment::class, 'id', 'professional_id');
+    }
+    
 }

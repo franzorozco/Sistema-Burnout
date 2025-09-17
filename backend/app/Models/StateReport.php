@@ -1,58 +1,47 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class StateReport
- * 
- * @property int $id
- * @property int $student_profile_id
- * @property Carbon $report_date
- * @property string|null $mood
- * @property int|null $energy_level
- * @property float|null $sleep_hours
- * @property int|null $stress_score
- * @property string|null $symptoms
- * @property string|null $location
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * 
- * @property StudentProfile $student_profile
  *
- * @package App\Models
+ * @property $id
+ * @property $student_profile_id
+ * @property $report_date
+ * @property $mood
+ * @property $energy_level
+ * @property $sleep_hours
+ * @property $stress_score
+ * @property $symptoms
+ * @property $location
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property StudentProfile $studentProfile
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class StateReport extends Model
 {
-	protected $table = 'state_reports';
+    
+    protected $perPage = 20;
 
-	protected $casts = [
-		'student_profile_id' => 'int',
-		'report_date' => 'datetime',
-		'energy_level' => 'int',
-		'sleep_hours' => 'float',
-		'stress_score' => 'int'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['student_profile_id', 'report_date', 'mood', 'energy_level', 'sleep_hours', 'stress_score', 'symptoms', 'location'];
 
-	protected $fillable = [
-		'student_profile_id',
-		'report_date',
-		'mood',
-		'energy_level',
-		'sleep_hours',
-		'stress_score',
-		'symptoms',
-		'location'
-	];
 
-	public function student_profile()
-	{
-		return $this->belongsTo(StudentProfile::class);
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function studentProfile()
+    {
+        return $this->belongsTo(\App\Models\StudentProfile::class, 'student_profile_id', 'id');
+    }
+    
 }

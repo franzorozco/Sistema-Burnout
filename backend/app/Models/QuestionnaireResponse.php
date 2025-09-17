@@ -1,66 +1,63 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class QuestionnaireResponse
- * 
- * @property int $id
- * @property int $questionnaire_id
- * @property int|null $student_profile_id
- * @property int|null $user_id
- * @property Carbon|null $submitted_at
- * @property float|null $summary_score
- * @property string|null $raw
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * 
- * @property Questionnaire $questionnaire
- * @property StudentProfile|null $student_profile
- * @property User|null $user
  *
- * @package App\Models
+ * @property $id
+ * @property $questionnaire_id
+ * @property $student_profile_id
+ * @property $user_id
+ * @property $submitted_at
+ * @property $summary_score
+ * @property $raw
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property Questionnaire $questionnaire
+ * @property StudentProfile $studentProfile
+ * @property User $user
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class QuestionnaireResponse extends Model
 {
-	protected $table = 'questionnaire_responses';
+    
+    protected $perPage = 20;
 
-	protected $casts = [
-		'questionnaire_id' => 'int',
-		'student_profile_id' => 'int',
-		'user_id' => 'int',
-		'submitted_at' => 'datetime',
-		'summary_score' => 'float'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['questionnaire_id', 'student_profile_id', 'user_id', 'submitted_at', 'summary_score', 'raw'];
 
-	protected $fillable = [
-		'questionnaire_id',
-		'student_profile_id',
-		'user_id',
-		'submitted_at',
-		'summary_score',
-		'raw'
-	];
 
-	public function questionnaire()
-	{
-		return $this->belongsTo(Questionnaire::class);
-	}
-
-	public function student_profile()
-	{
-		return $this->belongsTo(StudentProfile::class);
-	}
-
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function questionnaire()
+    {
+        return $this->belongsTo(\App\Models\Questionnaire::class, 'questionnaire_id', 'id');
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function studentProfile()
+    {
+        return $this->belongsTo(\App\Models\StudentProfile::class, 'student_profile_id', 'id');
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id', 'id');
+    }
+    
 }

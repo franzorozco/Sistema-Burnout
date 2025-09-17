@@ -1,55 +1,51 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class StudentRotation
- * 
- * @property int $id
- * @property int $student_profile_id
- * @property int $rotation_id
- * @property Carbon|null $assigned_at
- * @property string|null $shift_type
- * @property string|null $notes
- * 
- * @property StudentProfile $student_profile
- * @property Rotation $rotation
  *
- * @package App\Models
+ * @property $id
+ * @property $student_profile_id
+ * @property $rotation_id
+ * @property $assigned_at
+ * @property $shift_type
+ * @property $notes
+ *
+ * @property StudentProfile $studentProfile
+ * @property Rotation $rotation
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class StudentRotation extends Model
 {
-	protected $table = 'student_rotation';
-	public $timestamps = false;
+    
+    protected $perPage = 20;
 
-	protected $casts = [
-		'student_profile_id' => 'int',
-		'rotation_id' => 'int',
-		'assigned_at' => 'datetime'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['student_profile_id', 'rotation_id', 'assigned_at', 'shift_type', 'notes'];
 
-	protected $fillable = [
-		'student_profile_id',
-		'rotation_id',
-		'assigned_at',
-		'shift_type',
-		'notes'
-	];
 
-	public function student_profile()
-	{
-		return $this->belongsTo(StudentProfile::class);
-	}
-
-	public function rotation()
-	{
-		return $this->belongsTo(Rotation::class);
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function studentProfile()
+    {
+        return $this->belongsTo(\App\Models\StudentProfile::class, 'student_profile_id', 'id');
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function rotation()
+    {
+        return $this->belongsTo(\App\Models\Rotation::class, 'rotation_id', 'id');
+    }
+    
 }

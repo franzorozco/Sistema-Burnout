@@ -1,54 +1,51 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class QuestionnaireItem
- * 
- * @property int $id
- * @property int $questionnaire_id
- * @property int $item_order
- * @property string $question_text
- * @property string $response_type
- * @property string|null $meta
- * 
- * @property Questionnaire $questionnaire
- * @property Collection|QuestionnaireChoice[] $questionnaire_choices
  *
- * @package App\Models
+ * @property $id
+ * @property $questionnaire_id
+ * @property $item_order
+ * @property $question_text
+ * @property $response_type
+ * @property $meta
+ *
+ * @property Questionnaire $questionnaire
+ * @property QuestionnaireChoice[] $questionnaireChoices
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class QuestionnaireItem extends Model
 {
-	protected $table = 'questionnaire_items';
-	public $timestamps = false;
+    
+    protected $perPage = 20;
 
-	protected $casts = [
-		'questionnaire_id' => 'int',
-		'item_order' => 'int'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['questionnaire_id', 'item_order', 'question_text', 'response_type', 'meta'];
 
-	protected $fillable = [
-		'questionnaire_id',
-		'item_order',
-		'question_text',
-		'response_type',
-		'meta'
-	];
 
-	public function questionnaire()
-	{
-		return $this->belongsTo(Questionnaire::class);
-	}
-
-	public function questionnaire_choices()
-	{
-		return $this->hasMany(QuestionnaireChoice::class, 'item_id');
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function questionnaire()
+    {
+        return $this->belongsTo(\App\Models\Questionnaire::class, 'questionnaire_id', 'id');
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function questionnaireChoices()
+    {
+        return $this->hasMany(\App\Models\QuestionnaireChoice::class, 'id', 'item_id');
+    }
+    
 }

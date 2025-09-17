@@ -1,35 +1,38 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class PostTag
- * 
- * @property int $post_id
- * @property string $tag
- * 
- * @property Post $post
  *
- * @package App\Models
+ * @property $post_id
+ * @property $tag
+ *
+ * @property Post $post
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class PostTag extends Model
 {
-	protected $table = 'post_tags';
-	public $incrementing = false;
-	public $timestamps = false;
+    
+    protected $perPage = 20;
 
-	protected $casts = [
-		'post_id' => 'int'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['post_id', 'tag'];
 
-	public function post()
-	{
-		return $this->belongsTo(Post::class);
-	}
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function post()
+    {
+        return $this->belongsTo(\App\Models\Post::class, 'post_id', 'id');
+    }
+    
 }

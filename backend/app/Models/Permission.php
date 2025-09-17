@@ -1,34 +1,35 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Class Permission
- * 
- * @property int $id
- * @property string $name
- * @property string $guard_name
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * @property string|null $deleted_at
  *
- * @package App\Models
+ * @property $id
+ * @property $name
+ * @property $guard_name
+ * @property $created_at
+ * @property $updated_at
+ * @property $deleted_at
+ *
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Permission extends Model
 {
-	use SoftDeletes;
-	protected $table = 'permissions';
+    use SoftDeletes;
 
-	protected $fillable = [
-		'name',
-		'guard_name'
-	];
+    protected $perPage = 20;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['name', 'guard_name'];
+
+
 }

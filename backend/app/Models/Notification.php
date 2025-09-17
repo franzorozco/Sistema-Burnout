@@ -1,47 +1,42 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Notification
- * 
- * @property int $id
- * @property int $user_id
- * @property string $type
- * @property string|null $payload
- * @property bool|null $is_read
- * @property Carbon|null $created_at
- * 
- * @property User $user
  *
- * @package App\Models
+ * @property $id
+ * @property $user_id
+ * @property $type
+ * @property $payload
+ * @property $is_read
+ * @property $created_at
+ *
+ * @property User $user
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Notification extends Model
 {
-	protected $table = 'notifications';
-	public $timestamps = false;
+    
+    protected $perPage = 20;
 
-	protected $casts = [
-		'user_id' => 'int',
-		'is_read' => 'bool'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['user_id', 'type', 'payload', 'is_read'];
 
-	protected $fillable = [
-		'user_id',
-		'type',
-		'payload',
-		'is_read'
-	];
 
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id', 'id');
+    }
+    
 }

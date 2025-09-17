@@ -1,61 +1,62 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Questionnaire
- * 
- * @property int $id
- * @property string $code
- * @property string $title
- * @property string|null $description
- * @property string|null $version
- * @property int|null $created_by
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * 
- * @property User|null $user
- * @property Collection|QuestionnaireItem[] $questionnaire_items
- * @property Collection|QuestionnaireResponse[] $questionnaire_responses
  *
- * @package App\Models
+ * @property $id
+ * @property $code
+ * @property $title
+ * @property $description
+ * @property $version
+ * @property $created_by
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property User $user
+ * @property QuestionnaireItem[] $questionnaireItems
+ * @property QuestionnaireResponse[] $questionnaireResponses
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Questionnaire extends Model
 {
-	protected $table = 'questionnaires';
+    
+    protected $perPage = 20;
 
-	protected $casts = [
-		'created_by' => 'int'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['code', 'title', 'description', 'version', 'created_by'];
 
-	protected $fillable = [
-		'code',
-		'title',
-		'description',
-		'version',
-		'created_by'
-	];
 
-	public function user()
-	{
-		return $this->belongsTo(User::class, 'created_by');
-	}
-
-	public function questionnaire_items()
-	{
-		return $this->hasMany(QuestionnaireItem::class);
-	}
-
-	public function questionnaire_responses()
-	{
-		return $this->hasMany(QuestionnaireResponse::class);
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'created_by', 'id');
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function questionnaireItems()
+    {
+        return $this->hasMany(\App\Models\QuestionnaireItem::class, 'id', 'questionnaire_id');
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function questionnaireResponses()
+    {
+        return $this->hasMany(\App\Models\QuestionnaireResponse::class, 'id', 'questionnaire_id');
+    }
+    
 }

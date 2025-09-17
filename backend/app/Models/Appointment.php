@@ -1,68 +1,64 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class Appointment
- * 
- * @property int $id
- * @property int $student_profile_id
- * @property int $professional_id
- * @property Carbon $scheduled_at
- * @property int|null $duration_minutes
- * @property string|null $status
- * @property string|null $notes
- * @property int|null $created_by
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
- * 
- * @property StudentProfile $student_profile
- * @property Professional $professional
- * @property User|null $user
  *
- * @package App\Models
+ * @property $id
+ * @property $student_profile_id
+ * @property $professional_id
+ * @property $scheduled_at
+ * @property $duration_minutes
+ * @property $status
+ * @property $notes
+ * @property $created_by
+ * @property $created_at
+ * @property $updated_at
+ *
+ * @property StudentProfile $studentProfile
+ * @property Professional $professional
+ * @property User $user
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Appointment extends Model
 {
-	protected $table = 'appointments';
+    
+    protected $perPage = 20;
 
-	protected $casts = [
-		'student_profile_id' => 'int',
-		'professional_id' => 'int',
-		'scheduled_at' => 'datetime',
-		'duration_minutes' => 'int',
-		'created_by' => 'int'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['student_profile_id', 'professional_id', 'scheduled_at', 'duration_minutes', 'status', 'notes', 'created_by'];
 
-	protected $fillable = [
-		'student_profile_id',
-		'professional_id',
-		'scheduled_at',
-		'duration_minutes',
-		'status',
-		'notes',
-		'created_by'
-	];
 
-	public function student_profile()
-	{
-		return $this->belongsTo(StudentProfile::class);
-	}
-
-	public function professional()
-	{
-		return $this->belongsTo(Professional::class);
-	}
-
-	public function user()
-	{
-		return $this->belongsTo(User::class, 'created_by');
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function studentProfile()
+    {
+        return $this->belongsTo(\App\Models\StudentProfile::class, 'student_profile_id', 'id');
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function professional()
+    {
+        return $this->belongsTo(\App\Models\Professional::class, 'professional_id', 'id');
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'created_by', 'id');
+    }
+    
 }

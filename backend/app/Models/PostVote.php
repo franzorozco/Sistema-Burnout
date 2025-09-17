@@ -1,61 +1,60 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class PostVote
- * 
- * @property int $id
- * @property int $user_id
- * @property int|null $post_id
- * @property int|null $comment_id
- * @property int $vote
- * @property Carbon|null $created_at
- * 
- * @property User $user
- * @property Post|null $post
- * @property Comment|null $comment
  *
- * @package App\Models
+ * @property $id
+ * @property $user_id
+ * @property $post_id
+ * @property $comment_id
+ * @property $vote
+ * @property $created_at
+ *
+ * @property User $user
+ * @property Post $post
+ * @property Comment $comment
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class PostVote extends Model
 {
-	protected $table = 'post_votes';
-	public $timestamps = false;
+    
+    protected $perPage = 20;
 
-	protected $casts = [
-		'user_id' => 'int',
-		'post_id' => 'int',
-		'comment_id' => 'int',
-		'vote' => 'int'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['user_id', 'post_id', 'comment_id', 'vote'];
 
-	protected $fillable = [
-		'user_id',
-		'post_id',
-		'comment_id',
-		'vote'
-	];
 
-	public function user()
-	{
-		return $this->belongsTo(User::class);
-	}
-
-	public function post()
-	{
-		return $this->belongsTo(Post::class);
-	}
-
-	public function comment()
-	{
-		return $this->belongsTo(Comment::class);
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'user_id', 'id');
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function post()
+    {
+        return $this->belongsTo(\App\Models\Post::class, 'post_id', 'id');
+    }
+    
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function comment()
+    {
+        return $this->belongsTo(\App\Models\Comment::class, 'comment_id', 'id');
+    }
+    
 }

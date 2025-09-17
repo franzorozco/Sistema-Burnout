@@ -1,56 +1,46 @@
 <?php
 
-/**
- * Created by Reliese Model.
- */
-
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class File
- * 
- * @property int $id
- * @property int|null $owner_user_id
- * @property string|null $related_type
- * @property int|null $related_id
- * @property string $filename
- * @property string $url
- * @property string|null $mime_type
- * @property int|null $size_bytes
- * @property string|null $checksum
- * @property Carbon|null $created_at
- * 
- * @property User|null $user
  *
- * @package App\Models
+ * @property $id
+ * @property $owner_user_id
+ * @property $related_type
+ * @property $related_id
+ * @property $filename
+ * @property $url
+ * @property $mime_type
+ * @property $size_bytes
+ * @property $checksum
+ * @property $created_at
+ *
+ * @property User $user
+ * @package App
+ * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class File extends Model
 {
-	protected $table = 'files';
-	public $timestamps = false;
+    
+    protected $perPage = 20;
 
-	protected $casts = [
-		'owner_user_id' => 'int',
-		'related_id' => 'int',
-		'size_bytes' => 'int'
-	];
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = ['owner_user_id', 'related_type', 'related_id', 'filename', 'url', 'mime_type', 'size_bytes', 'checksum'];
 
-	protected $fillable = [
-		'owner_user_id',
-		'related_type',
-		'related_id',
-		'filename',
-		'url',
-		'mime_type',
-		'size_bytes',
-		'checksum'
-	];
 
-	public function user()
-	{
-		return $this->belongsTo(User::class, 'owner_user_id');
-	}
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'owner_user_id', 'id');
+    }
+    
 }
