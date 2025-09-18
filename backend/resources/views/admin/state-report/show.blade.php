@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ $stateReport->name ?? __('Show') . " " . __('State Report') }}
+    {{ $stateReport->name ?? 'Mostrar Reporte de Estado' }}
 @endsection
 
 @section('content')
@@ -11,48 +11,46 @@
                 <div class="card">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} State Report</span>
+                            <span class="card-title">Mostrar Reporte de Estado</span>
                         </div>
                         <div class="float-right">
-                            <a class="btn btn-primary btn-sm" href="{{ route('state-reports.index') }}"> {{ __('Back') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('admin.state-reports.index') }}"> Volver</a>
                         </div>
                     </div>
 
                     <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Student Profile Id:</strong>
-                                    {{ $stateReport->student_profile_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Report Date:</strong>
-                                    {{ $stateReport->report_date }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Mood:</strong>
-                                    {{ $stateReport->mood }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Energy Level:</strong>
-                                    {{ $stateReport->energy_level }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Sleep Hours:</strong>
-                                    {{ $stateReport->sleep_hours }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Stress Score:</strong>
-                                    {{ $stateReport->stress_score }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Symptoms:</strong>
-                                    {{ $stateReport->symptoms }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Location:</strong>
-                                    {{ $stateReport->location }}
-                                </div>
-
+                        <div class="form-group mb-2 mb20">
+                            <strong>Perfil de Estudiante:</strong>
+                            {{ $stateReport->student_profile_id }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Fecha del Reporte:</strong>
+                            {{ $stateReport->report_date }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Estado de Ánimo:</strong>
+                            {{ $stateReport->mood }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Nivel de Energía:</strong>
+                            {{ $stateReport->energy_level }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Horas de Sueño:</strong>
+                            {{ $stateReport->sleep_hours }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Puntaje de Estrés:</strong>
+                            {{ $stateReport->stress_score }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Síntomas:</strong>
+                            {{ $stateReport->symptoms }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Ubicación:</strong>
+                            {{ $stateReport->location }}
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    Student Profiles
+    Perfiles de Estudiantes
 @endsection
 
 @section('content')
@@ -13,12 +13,12 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Student Profiles') }}
+                                {{ __('Perfiles de Estudiantes') }}
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('student-profiles.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Create New') }}
+                                <a href="{{ route('admin.student-profiles.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  {{ __('Crear Nuevo') }}
                                 </a>
                               </div>
                         </div>
@@ -35,16 +35,14 @@
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
-									<th >User Id</th>
-									<th >Student Code</th>
-									<th >Birthdate</th>
-									<th >Career</th>
-									<th >Semester</th>
-									<th >Group Name</th>
-									<th >Consent Given</th>
-									<th >Consent At</th>
-
+                                        <th>Id de Usuario</th>
+                                        <th>Código de Estudiante</th>
+                                        <th>Fecha de Nacimiento</th>
+                                        <th>Carrera</th>
+                                        <th>Semestre</th>
+                                        <th>Nombre del Grupo</th>
+                                        <th>Consentimiento</th>
+                                        <th>Fecha de Consentimiento</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -52,23 +50,22 @@
                                     @foreach ($studentProfiles as $studentProfile)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $studentProfile->user_id }}</td>
-										<td >{{ $studentProfile->student_code }}</td>
-										<td >{{ $studentProfile->birthdate }}</td>
-										<td >{{ $studentProfile->career }}</td>
-										<td >{{ $studentProfile->semester }}</td>
-										<td >{{ $studentProfile->group_name }}</td>
-										<td >{{ $studentProfile->consent_given }}</td>
-										<td >{{ $studentProfile->consent_at }}</td>
+                                            <td>{{ $studentProfile->user_id }}</td>
+                                            <td>{{ $studentProfile->student_code }}</td>
+                                            <td>{{ $studentProfile->birthdate }}</td>
+                                            <td>{{ $studentProfile->career }}</td>
+                                            <td>{{ $studentProfile->semester }}</td>
+                                            <td>{{ $studentProfile->group_name }}</td>
+                                            <td>{{ $studentProfile->consent_given }}</td>
+                                            <td>{{ $studentProfile->consent_at }}</td>
 
                                             <td>
-                                                <form action="{{ route('student-profiles.destroy', $studentProfile->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('student-profiles.show', $studentProfile->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('student-profiles.edit', $studentProfile->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                <form action="{{ route('admin.student-profiles.destroy', $studentProfile->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary" href="{{ route('admin.student-profiles.show', $studentProfile->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Ver') }}</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('admin.student-profiles.edit', $studentProfile->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Estás seguro de eliminar este perfil?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}</button>
                                                 </form>
                                             </td>
                                         </tr>

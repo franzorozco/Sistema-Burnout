@@ -18,7 +18,7 @@ class RoleController extends Controller
     {
         $roles = Role::paginate();
 
-        return view('role.index', compact('roles'))
+        return view('admin.role.index', compact('roles'))
             ->with('i', ($request->input('page', 1) - 1) * $roles->perPage());
     }
 
@@ -29,7 +29,7 @@ class RoleController extends Controller
     {
         $role = new Role();
 
-        return view('role.create', compact('role'));
+        return view('admin.role.create', compact('role'));
     }
 
     /**
@@ -39,7 +39,7 @@ class RoleController extends Controller
     {
         Role::create($request->validated());
 
-        return Redirect::route('roles.index')
+        return Redirect::route('admin.roles.index')
             ->with('success', 'Role created successfully.');
     }
 
@@ -50,7 +50,7 @@ class RoleController extends Controller
     {
         $role = Role::find($id);
 
-        return view('role.show', compact('role'));
+        return view('admin.role.show', compact('role'));
     }
 
     /**
@@ -60,7 +60,7 @@ class RoleController extends Controller
     {
         $role = Role::find($id);
 
-        return view('role.edit', compact('role'));
+        return view('admin.role.edit', compact('role'));
     }
 
     /**
@@ -70,7 +70,7 @@ class RoleController extends Controller
     {
         $role->update($request->validated());
 
-        return Redirect::route('roles.index')
+        return Redirect::route('admin.roles.index')
             ->with('success', 'Role updated successfully');
     }
 
@@ -78,7 +78,7 @@ class RoleController extends Controller
     {
         Role::find($id)->delete();
 
-        return Redirect::route('roles.index')
+        return Redirect::route('admin.roles.index')
             ->with('success', 'Role deleted successfully');
     }
 }

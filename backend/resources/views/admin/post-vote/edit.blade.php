@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Post Vote
+    {{ __('Actualizar') }} Voto de Publicación
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Post Vote</span>
+                        <span class="card-title">{{ __('Actualizar') }} Voto de Publicación</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('post-votes.update', $postVote->id) }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.post-votes.update', $postVote->id) }}" role="form" enctype="multipart/form-data">
                             {{ method_field('PATCH') }}
                             @csrf
 
-                            @include('post-vote.form')
+                            @include('admin.post-vote.form')
 
                         </form>
                     </div>

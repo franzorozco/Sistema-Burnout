@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Create') }} State Report
+    Crear Reporte de Estado
 @endsection
 
 @section('content')
@@ -11,13 +11,13 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Create') }} State Report</span>
+                        <span class="card-title">Crear Reporte de Estado</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('state-reports.store') }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.state-reports.store') }}" role="form" enctype="multipart/form-data">
                             @csrf
 
-                            @include('state-report.form')
+                            @include('admin.state-report.form')
 
                         </form>
                     </div>

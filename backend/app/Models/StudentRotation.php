@@ -21,8 +21,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class StudentRotation extends Model
 {
-    
-    protected $perPage = 20;
+
+    protected $table = 'student_rotation';
 
     /**
      * The attributes that are mass assignable.

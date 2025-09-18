@@ -18,7 +18,7 @@ class NotificationController extends Controller
     {
         $notifications = Notification::paginate();
 
-        return view('notification.index', compact('notifications'))
+        return view('admin.notification.index', compact('notifications'))
             ->with('i', ($request->input('page', 1) - 1) * $notifications->perPage());
     }
 
@@ -29,7 +29,7 @@ class NotificationController extends Controller
     {
         $notification = new Notification();
 
-        return view('notification.create', compact('notification'));
+        return view('admin.notification.create', compact('notification'));
     }
 
     /**
@@ -39,7 +39,7 @@ class NotificationController extends Controller
     {
         Notification::create($request->validated());
 
-        return Redirect::route('notifications.index')
+        return Redirect::route('admin.notifications.index')
             ->with('success', 'Notification created successfully.');
     }
 
@@ -50,7 +50,7 @@ class NotificationController extends Controller
     {
         $notification = Notification::find($id);
 
-        return view('notification.show', compact('notification'));
+        return view('admin.notification.show', compact('notification'));
     }
 
     /**
@@ -60,7 +60,7 @@ class NotificationController extends Controller
     {
         $notification = Notification::find($id);
 
-        return view('notification.edit', compact('notification'));
+        return view('admin.notification.edit', compact('notification'));
     }
 
     /**
@@ -70,7 +70,7 @@ class NotificationController extends Controller
     {
         $notification->update($request->validated());
 
-        return Redirect::route('notifications.index')
+        return Redirect::route('admin.notifications.index')
             ->with('success', 'Notification updated successfully');
     }
 
@@ -78,7 +78,7 @@ class NotificationController extends Controller
     {
         Notification::find($id)->delete();
 
-        return Redirect::route('notifications.index')
+        return Redirect::route('admin.notifications.index')
             ->with('success', 'Notification deleted successfully');
     }
 }

@@ -1,29 +1,24 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Professional
+    Actualizar Profesional
 @endsection
 
 @section('content')
-    <section class="content container-fluid">
-        <div class="">
-            <div class="col-md-12">
-
-                <div class="card card-default">
-                    <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Professional</span>
-                    </div>
-                    <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('professionals.update', $professional->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
-                            @csrf
-
-                            @include('professional.form')
-
-                        </form>
-                    </div>
-                </div>
+<section class="content container-fluid">
+    <div class="col-md-12">
+        <div class="card card-default">
+            <div class="card-header">
+                <span class="card-title">Actualizar Profesional</span>
+            </div>
+            <div class="card-body bg-white">
+                <form method="POST" action="{{ route('admin.professionals.update', $professional->id) }}" enctype="multipart/form-data">
+                    @csrf
+                    @method('PATCH')
+                    @include('admin.professional.form')
+                </form>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 @endsection

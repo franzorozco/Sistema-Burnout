@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Post
+    {{ __('Actualizar') }} Publicación
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Post</span>
+                        <span class="card-title">{{ __('Actualizar') }} Publicación</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('posts.update', $post->id) }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.posts.update', $post->id) }}" role="form" enctype="multipart/form-data">
                             {{ method_field('PATCH') }}
                             @csrf
 
-                            @include('post.form')
+                            @include('admin.post.form')
 
                         </form>
                     </div>

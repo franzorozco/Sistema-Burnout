@@ -18,7 +18,7 @@ class QuestionnaireItemController extends Controller
     {
         $questionnaireItems = QuestionnaireItem::paginate();
 
-        return view('questionnaire-item.index', compact('questionnaireItems'))
+        return view('admin.questionnaire-item.index', compact('questionnaireItems'))
             ->with('i', ($request->input('page', 1) - 1) * $questionnaireItems->perPage());
     }
 
@@ -29,7 +29,7 @@ class QuestionnaireItemController extends Controller
     {
         $questionnaireItem = new QuestionnaireItem();
 
-        return view('questionnaire-item.create', compact('questionnaireItem'));
+        return view('admin.questionnaire-item.create', compact('questionnaireItem'));
     }
 
     /**
@@ -39,7 +39,7 @@ class QuestionnaireItemController extends Controller
     {
         QuestionnaireItem::create($request->validated());
 
-        return Redirect::route('questionnaire-items.index')
+        return Redirect::route('admin.questionnaire-items.index')
             ->with('success', 'QuestionnaireItem created successfully.');
     }
 
@@ -50,7 +50,7 @@ class QuestionnaireItemController extends Controller
     {
         $questionnaireItem = QuestionnaireItem::find($id);
 
-        return view('questionnaire-item.show', compact('questionnaireItem'));
+        return view('admin.questionnaire-item.show', compact('questionnaireItem'));
     }
 
     /**
@@ -60,7 +60,7 @@ class QuestionnaireItemController extends Controller
     {
         $questionnaireItem = QuestionnaireItem::find($id);
 
-        return view('questionnaire-item.edit', compact('questionnaireItem'));
+        return view('admin.questionnaire-item.edit', compact('questionnaireItem'));
     }
 
     /**
@@ -70,7 +70,7 @@ class QuestionnaireItemController extends Controller
     {
         $questionnaireItem->update($request->validated());
 
-        return Redirect::route('questionnaire-items.index')
+        return Redirect::route('admin.questionnaire-items.index')
             ->with('success', 'QuestionnaireItem updated successfully');
     }
 
@@ -78,7 +78,7 @@ class QuestionnaireItemController extends Controller
     {
         QuestionnaireItem::find($id)->delete();
 
-        return Redirect::route('questionnaire-items.index')
+        return Redirect::route('admin.questionnaire-items.index')
             ->with('success', 'QuestionnaireItem deleted successfully');
     }
 }

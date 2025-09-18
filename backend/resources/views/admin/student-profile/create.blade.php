@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Create') }} Student Profile
+    {{ __('Crear') }} Perfil de Estudiante
 @endsection
 
 @section('content')
@@ -11,13 +11,13 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Create') }} Student Profile</span>
+                        <span class="card-title">{{ __('Crear') }} Perfil de Estudiante</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('student-profiles.store') }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.student-profiles.store') }}"  role="form" enctype="multipart/form-data">
                             @csrf
 
-                            @include('student-profile.form')
+                            @include('admin.student-profile.form')
 
                         </form>
                     </div>

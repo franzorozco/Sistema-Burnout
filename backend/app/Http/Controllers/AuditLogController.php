@@ -18,7 +18,7 @@ class AuditLogController extends Controller
     {
         $auditLogs = AuditLog::paginate();
 
-        return view('audit-log.index', compact('auditLogs'))
+        return view('admin.audit-log.index', compact('auditLogs'))
             ->with('i', ($request->input('page', 1) - 1) * $auditLogs->perPage());
     }
 
@@ -29,7 +29,7 @@ class AuditLogController extends Controller
     {
         $auditLog = new AuditLog();
 
-        return view('audit-log.create', compact('auditLog'));
+        return view('admin.audit-log.create', compact('auditLog'));
     }
 
     /**
@@ -39,7 +39,7 @@ class AuditLogController extends Controller
     {
         AuditLog::create($request->validated());
 
-        return Redirect::route('audit-logs.index')
+        return Redirect::route('admin.audit-logs.index')
             ->with('success', 'AuditLog created successfully.');
     }
 
@@ -50,7 +50,7 @@ class AuditLogController extends Controller
     {
         $auditLog = AuditLog::find($id);
 
-        return view('audit-log.show', compact('auditLog'));
+        return view('admin.audit-log.show', compact('auditLog'));
     }
 
     /**
@@ -60,7 +60,7 @@ class AuditLogController extends Controller
     {
         $auditLog = AuditLog::find($id);
 
-        return view('audit-log.edit', compact('auditLog'));
+        return view('admin.audit-log.edit', compact('auditLog'));
     }
 
     /**
@@ -70,7 +70,7 @@ class AuditLogController extends Controller
     {
         $auditLog->update($request->validated());
 
-        return Redirect::route('audit-logs.index')
+        return Redirect::route('admin.audit-logs.index')
             ->with('success', 'AuditLog updated successfully');
     }
 
@@ -78,7 +78,7 @@ class AuditLogController extends Controller
     {
         AuditLog::find($id)->delete();
 
-        return Redirect::route('audit-logs.index')
+        return Redirect::route('admin.audit-logs.index')
             ->with('success', 'AuditLog deleted successfully');
     }
 }

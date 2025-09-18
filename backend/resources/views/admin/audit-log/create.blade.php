@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Create') }} Audit Log
+    {{ __('Crear') }} Registro de Auditoría
 @endsection
 
 @section('content')
@@ -11,13 +11,13 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Create') }} Audit Log</span>
+                        <span class="card-title">{{ __('Crear') }} Registro de Auditoría</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('audit-logs.store') }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.audit-logs.store') }}" role="form" enctype="multipart/form-data">
                             @csrf
 
-                            @include('audit-log.form')
+                            @include('admin.audit-log.form')
 
                         </form>
                     </div>

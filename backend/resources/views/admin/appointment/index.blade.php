@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    Appointments
+    Citas
 @endsection
 
 @section('content')
@@ -13,16 +13,17 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Appointments') }}
+                                {{ __('Citas') }}
                             </span>
 
-                             <div class="float-right">
-                                <a href="{{ route('appointments.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Create New') }}
+                            <div class="float-right">
+                                <a href="{{ route('admin.appointments.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  {{ __('Crear Nueva') }}
                                 </a>
-                              </div>
+                            </div>
                         </div>
                     </div>
+
                     @if ($message = Session::get('success'))
                         <div class="alert alert-success m-4">
                             <p>{{ $message }}</p>
@@ -35,15 +36,13 @@
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
-									<th >Student Profile Id</th>
-									<th >Professional Id</th>
-									<th >Scheduled At</th>
-									<th >Duration Minutes</th>
-									<th >Status</th>
-									<th >Notes</th>
-									<th >Created By</th>
-
+                                        <th>Id del Perfil del Estudiante</th>
+                                        <th>Id del Profesional</th>
+                                        <th>Programado Para</th>
+                                        <th>Duración (minutos)</th>
+                                        <th>Estado</th>
+                                        <th>Notas</th>
+                                        <th>Creado Por</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -51,22 +50,26 @@
                                     @foreach ($appointments as $appointment)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $appointment->student_profile_id }}</td>
-										<td >{{ $appointment->professional_id }}</td>
-										<td >{{ $appointment->scheduled_at }}</td>
-										<td >{{ $appointment->duration_minutes }}</td>
-										<td >{{ $appointment->status }}</td>
-										<td >{{ $appointment->notes }}</td>
-										<td >{{ $appointment->created_by }}</td>
-
+                                            <td>{{ $appointment->student_profile_id }}</td>
+                                            <td>{{ $appointment->professional_id }}</td>
+                                            <td>{{ $appointment->scheduled_at }}</td>
+                                            <td>{{ $appointment->duration_minutes }}</td>
+                                            <td>{{ $appointment->status }}</td>
+                                            <td>{{ $appointment->notes }}</td>
+                                            <td>{{ $appointment->created_by }}</td>
                                             <td>
-                                                <form action="{{ route('appointments.destroy', $appointment->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('appointments.show', $appointment->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('appointments.edit', $appointment->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                <form action="{{ route('admin.appointments.destroy', $appointment->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary" href="{{ route('admin.appointments.show', $appointment->id) }}">
+                                                        <i class="fa fa-fw fa-eye"></i> {{ __('Ver') }}
+                                                    </a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('admin.appointments.edit', $appointment->id) }}">
+                                                        <i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}
+                                                    </a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Estás seguro de eliminar?') ? this.closest('form').submit() : false;">
+                                                        <i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}
+                                                    </button>
                                                 </form>
                                             </td>
                                         </tr>

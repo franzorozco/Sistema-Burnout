@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Permission
+    {{ __('Actualizar') }} Permiso
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Permission</span>
+                        <span class="card-title">{{ __('Actualizar') }} Permiso</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('permissions.update', $permission->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
+                        <form method="POST" action="{{ route('admin.permissions.update', $permission->id) }}" role="form" enctype="multipart/form-data">
+                            @method('PATCH')
                             @csrf
 
-                            @include('permission.form')
+                            @include('admin.permission.form')
 
                         </form>
                     </div>

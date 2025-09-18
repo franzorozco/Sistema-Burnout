@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Create') }} Rotation
+    {{ __('Crear') }} Rotación
 @endsection
 
 @section('content')
@@ -11,13 +11,13 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Create') }} Rotation</span>
+                        <span class="card-title">{{ __('Crear') }} Rotación</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('rotations.store') }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.rotations.store') }}"  role="form" enctype="multipart/form-data">
                             @csrf
 
-                            @include('rotation.form')
+                            @include('admin.rotation.form')
 
                         </form>
                     </div>

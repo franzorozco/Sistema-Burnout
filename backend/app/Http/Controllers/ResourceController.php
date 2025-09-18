@@ -18,7 +18,7 @@ class ResourceController extends Controller
     {
         $resources = Resource::paginate();
 
-        return view('resource.index', compact('resources'))
+        return view('admin.resource.index', compact('resources'))
             ->with('i', ($request->input('page', 1) - 1) * $resources->perPage());
     }
 
@@ -29,7 +29,7 @@ class ResourceController extends Controller
     {
         $resource = new Resource();
 
-        return view('resource.create', compact('resource'));
+        return view('admin.resource.create', compact('resource'));
     }
 
     /**
@@ -39,7 +39,7 @@ class ResourceController extends Controller
     {
         Resource::create($request->validated());
 
-        return Redirect::route('resources.index')
+        return Redirect::route('admin.resources.index')
             ->with('success', 'Resource created successfully.');
     }
 
@@ -50,7 +50,7 @@ class ResourceController extends Controller
     {
         $resource = Resource::find($id);
 
-        return view('resource.show', compact('resource'));
+        return view('admin.resource.show', compact('resource'));
     }
 
     /**
@@ -60,7 +60,7 @@ class ResourceController extends Controller
     {
         $resource = Resource::find($id);
 
-        return view('resource.edit', compact('resource'));
+        return view('admin.resource.edit', compact('resource'));
     }
 
     /**
@@ -70,7 +70,7 @@ class ResourceController extends Controller
     {
         $resource->update($request->validated());
 
-        return Redirect::route('resources.index')
+        return Redirect::route('admin.resources.index')
             ->with('success', 'Resource updated successfully');
     }
 
@@ -78,7 +78,7 @@ class ResourceController extends Controller
     {
         Resource::find($id)->delete();
 
-        return Redirect::route('resources.index')
+        return Redirect::route('admin.resources.index')
             ->with('success', 'Resource deleted successfully');
     }
 }

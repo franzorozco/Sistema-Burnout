@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('template_title')
-    {{ $file->name ?? __('Show') . " " . __('File') }}
+    {{ $file->name ?? __('Mostrar') . " " . __('Archivo') }}
 @endsection
 
 @section('content')
@@ -9,50 +9,44 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
-                        <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} File</span>
-                        </div>
-                        <div class="float-right">
-                            <a class="btn btn-primary btn-sm" href="{{ route('files.index') }}"> {{ __('Back') }}</a>
-                        </div>
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="card-title">{{ __('Mostrar') }} Archivo</span>
+                        <a class="btn btn-primary btn-sm" href="{{ route('admin.files.index') }}"> {{ __('Volver') }}</a>
                     </div>
 
                     <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Owner User Id:</strong>
-                                    {{ $file->owner_user_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Related Type:</strong>
-                                    {{ $file->related_type }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Related Id:</strong>
-                                    {{ $file->related_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Filename:</strong>
-                                    {{ $file->filename }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Url:</strong>
-                                    {{ $file->url }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Mime Type:</strong>
-                                    {{ $file->mime_type }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Size Bytes:</strong>
-                                    {{ $file->size_bytes }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Checksum:</strong>
-                                    {{ $file->checksum }}
-                                </div>
-
+                        <div class="form-group mb-2 mb20">
+                            <strong>Usuario dueño:</strong>
+                            {{ $file->owner_user_id }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Tipo relacionado:</strong>
+                            {{ $file->related_type }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>ID relacionado:</strong>
+                            {{ $file->related_id }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Nombre de archivo:</strong>
+                            {{ $file->filename }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>URL:</strong>
+                            {{ $file->url }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Tipo MIME:</strong>
+                            {{ $file->mime_type }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Tamaño (bytes):</strong>
+                            {{ $file->size_bytes }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Checksum:</strong>
+                            {{ $file->checksum }}
+                        </div>
                     </div>
                 </div>
             </div>

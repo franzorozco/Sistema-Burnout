@@ -18,7 +18,7 @@ class ChatbotInteractionController extends Controller
     {
         $chatbotInteractions = ChatbotInteraction::paginate();
 
-        return view('chatbot-interaction.index', compact('chatbotInteractions'))
+        return view('admin.chatbot-interaction.index', compact('chatbotInteractions'))
             ->with('i', ($request->input('page', 1) - 1) * $chatbotInteractions->perPage());
     }
 
@@ -29,7 +29,7 @@ class ChatbotInteractionController extends Controller
     {
         $chatbotInteraction = new ChatbotInteraction();
 
-        return view('chatbot-interaction.create', compact('chatbotInteraction'));
+        return view('admin.chatbot-interaction.create', compact('chatbotInteraction'));
     }
 
     /**
@@ -39,7 +39,7 @@ class ChatbotInteractionController extends Controller
     {
         ChatbotInteraction::create($request->validated());
 
-        return Redirect::route('chatbot-interactions.index')
+        return Redirect::route('admin.chatbot-interactions.index')
             ->with('success', 'ChatbotInteraction created successfully.');
     }
 
@@ -50,7 +50,7 @@ class ChatbotInteractionController extends Controller
     {
         $chatbotInteraction = ChatbotInteraction::find($id);
 
-        return view('chatbot-interaction.show', compact('chatbotInteraction'));
+        return view('admin.chatbot-interaction.show', compact('chatbotInteraction'));
     }
 
     /**
@@ -60,7 +60,7 @@ class ChatbotInteractionController extends Controller
     {
         $chatbotInteraction = ChatbotInteraction::find($id);
 
-        return view('chatbot-interaction.edit', compact('chatbotInteraction'));
+        return view('admin.chatbot-interaction.edit', compact('chatbotInteraction'));
     }
 
     /**
@@ -70,7 +70,7 @@ class ChatbotInteractionController extends Controller
     {
         $chatbotInteraction->update($request->validated());
 
-        return Redirect::route('chatbot-interactions.index')
+        return Redirect::route('admin.chatbot-interactions.index')
             ->with('success', 'ChatbotInteraction updated successfully');
     }
 
@@ -78,7 +78,7 @@ class ChatbotInteractionController extends Controller
     {
         ChatbotInteraction::find($id)->delete();
 
-        return Redirect::route('chatbot-interactions.index')
+        return Redirect::route('admin.chatbot-interactions.index')
             ->with('success', 'ChatbotInteraction deleted successfully');
     }
 }

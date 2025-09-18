@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Resource
+    {{ __('Actualizar') }} Recurso
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Resource</span>
+                        <span class="card-title">{{ __('Actualizar') }} Recurso</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('resources.update', $resource->id) }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.resources.update', $resource->id) }}" role="form" enctype="multipart/form-data">
                             {{ method_field('PATCH') }}
                             @csrf
 
-                            @include('resource.form')
+                            @include('admin.resource.form')
 
                         </form>
                     </div>

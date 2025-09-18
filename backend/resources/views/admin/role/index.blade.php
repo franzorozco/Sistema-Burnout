@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
     Roles
@@ -17,8 +17,8 @@
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('roles.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Create New') }}
+                                <a href="{{ route('admin.roles.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  {{ __('Crear Nuevo') }}
                                 </a>
                               </div>
                         </div>
@@ -35,12 +35,10 @@
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
-									<th >Name</th>
-									<th >Guard Name</th>
-									<th >Description</th>
-									<th >Created By</th>
-
+                                        <th>Nombre</th>
+                                        <th>Guardia</th>
+                                        <th>Descripción</th>
+                                        <th>Creado Por</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -48,19 +46,17 @@
                                     @foreach ($roles as $role)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $role->name }}</td>
-										<td >{{ $role->guard_name }}</td>
-										<td >{{ $role->description }}</td>
-										<td >{{ $role->created_by }}</td>
-
+                                            <td>{{ $role->name }}</td>
+                                            <td>{{ $role->guard_name }}</td>
+                                            <td>{{ $role->description }}</td>
+                                            <td>{{ $role->created_by }}</td>
                                             <td>
-                                                <form action="{{ route('roles.destroy', $role->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('roles.show', $role->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('roles.edit', $role->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                <form action="{{ route('admin.roles.destroy', $role->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary" href="{{ route('admin.roles.show', $role->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Ver') }}</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('admin.roles.edit', $role->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Estás seguro de eliminar este rol?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}</button>
                                                 </form>
                                             </td>
                                         </tr>

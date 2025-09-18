@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Audit Log
+    {{ __('Actualizar') }} Registro de Auditoría
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Audit Log</span>
+                        <span class="card-title">{{ __('Actualizar') }} Registro de Auditoría</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('audit-logs.update', $auditLog->id) }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.audit-logs.update', $auditLog->id) }}" role="form" enctype="multipart/form-data">
                             {{ method_field('PATCH') }}
                             @csrf
 
-                            @include('audit-log.form')
+                            @include('admin.audit-log.form')
 
                         </form>
                     </div>

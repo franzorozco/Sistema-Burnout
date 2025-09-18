@@ -1,28 +1,25 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Create') }} Professional
+    Crear Profesional
 @endsection
 
 @section('content')
-    <section class="content container-fluid">
-        <div class="row">
-            <div class="col-md-12">
-
-                <div class="card card-default">
-                    <div class="card-header">
-                        <span class="card-title">{{ __('Create') }} Professional</span>
-                    </div>
-                    <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('professionals.store') }}"  role="form" enctype="multipart/form-data">
-                            @csrf
-
-                            @include('professional.form')
-
-                        </form>
-                    </div>
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <span class="card-title">Crear Profesional</span>
+                </div>
+                <div class="card-body bg-white">
+                    <form method="POST" action="{{ route('admin.professionals.store') }}" enctype="multipart/form-data">
+                        @csrf
+                        @include('admin.professional.form')
+                    </form>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 @endsection

@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    Questionnaire Items
+    Ítems de Cuestionario
 @endsection
 
 @section('content')
@@ -13,12 +13,12 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Questionnaire Items') }}
+                                {{ __('Ítems de Cuestionario') }}
                             </span>
 
-                             <div class="float-right">
-                                <a href="{{ route('questionnaire-items.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Create New') }}
+                            <div class="float-right">
+                                <a href="{{ route('admin.questionnaire-items.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  {{ __('Crear Nuevo') }}
                                 </a>
                               </div>
                         </div>
@@ -35,13 +35,11 @@
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
-									<th >Questionnaire Id</th>
-									<th >Item Order</th>
-									<th >Question Text</th>
-									<th >Response Type</th>
-									<th >Meta</th>
-
+                                        <th>Cuestionario</th>
+                                        <th>Orden del Ítem</th>
+                                        <th>Pregunta</th>
+                                        <th>Tipo de Respuesta</th>
+                                        <th>Meta</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -49,20 +47,24 @@
                                     @foreach ($questionnaireItems as $questionnaireItem)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $questionnaireItem->questionnaire_id }}</td>
-										<td >{{ $questionnaireItem->item_order }}</td>
-										<td >{{ $questionnaireItem->question_text }}</td>
-										<td >{{ $questionnaireItem->response_type }}</td>
-										<td >{{ $questionnaireItem->meta }}</td>
-
+                                            <td>{{ $questionnaireItem->questionnaire_id }}</td>
+                                            <td>{{ $questionnaireItem->item_order }}</td>
+                                            <td>{{ $questionnaireItem->question_text }}</td>
+                                            <td>{{ $questionnaireItem->response_type }}</td>
+                                            <td>{{ $questionnaireItem->meta }}</td>
                                             <td>
-                                                <form action="{{ route('questionnaire-items.destroy', $questionnaireItem->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('questionnaire-items.show', $questionnaireItem->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('questionnaire-items.edit', $questionnaireItem->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                <form action="{{ route('admin.questionnaire-items.destroy', $questionnaireItem->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary" href="{{ route('admin.questionnaire-items.show', $questionnaireItem->id) }}">
+                                                        <i class="fa fa-fw fa-eye"></i> {{ __('Ver') }}
+                                                    </a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('admin.questionnaire-items.edit', $questionnaireItem->id) }}">
+                                                        <i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}
+                                                    </a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Está seguro de eliminar?') ? this.closest('form').submit() : false;">
+                                                        <i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}
+                                                    </button>
                                                 </form>
                                             </td>
                                         </tr>

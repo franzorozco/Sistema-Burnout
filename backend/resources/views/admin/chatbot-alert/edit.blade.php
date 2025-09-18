@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Chatbot Alert
+    Actualizar Alerta del Chatbot
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Chatbot Alert</span>
+                        <span class="card-title">Actualizar Alerta del Chatbot</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('chatbot-alerts.update', $chatbotAlert->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
+                        <form method="POST" action="{{ route('admin.chatbot-alerts.update', $chatbotAlert->id) }}" role="form" enctype="multipart/form-data">
+                            @method('PATCH')
                             @csrf
 
-                            @include('chatbot-alert.form')
+                            @include('admin.chatbot-alert.form')
 
                         </form>
                     </div>

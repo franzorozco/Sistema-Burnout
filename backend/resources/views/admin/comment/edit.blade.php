@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Comment
+    {{ __('Actualizar') }} Comentario
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Comment</span>
+                        <span class="card-title">{{ __('Actualizar') }} Comentario</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('comments.update', $comment->id) }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.comments.update', $comment->id) }}" role="form" enctype="multipart/form-data">
                             {{ method_field('PATCH') }}
                             @csrf
 
-                            @include('comment.form')
+                            @include('admin.comment.form')
 
                         </form>
                     </div>

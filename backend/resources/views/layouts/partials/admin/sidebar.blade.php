@@ -1,10 +1,10 @@
 @php
     $links = [
         [
-            'name' => 'Dashboard',
+            'name' => 'Administración',
             'icon' => 'fa-solid fa-circle-user',
-            'route' => 'dashboard',
-            'active' => request()->routeIs('dashboard')
+            'route' => 'admin.dashboard',
+            'active' => request()->routeIs('admin.dashboard*')
         ],
         [
             'name' => 'Users',

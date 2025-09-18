@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    Questionnaires
+    Cuestionarios
 @endsection
 
 @section('content')
@@ -13,12 +13,12 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Questionnaires') }}
+                                {{ __('Cuestionarios') }}
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('questionnaires.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Create New') }}
+                                <a href="{{ route('admin.questionnaires.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  {{ __('Crear Nuevo') }}
                                 </a>
                               </div>
                         </div>
@@ -35,13 +35,11 @@
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
-									<th >Code</th>
-									<th >Title</th>
-									<th >Description</th>
-									<th >Version</th>
-									<th >Created By</th>
-
+                                        <th>Código</th>
+                                        <th>Título</th>
+                                        <th>Descripción</th>
+                                        <th>Versión</th>
+                                        <th>Creado Por</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -49,20 +47,20 @@
                                     @foreach ($questionnaires as $questionnaire)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $questionnaire->code }}</td>
-										<td >{{ $questionnaire->title }}</td>
-										<td >{{ $questionnaire->description }}</td>
-										<td >{{ $questionnaire->version }}</td>
-										<td >{{ $questionnaire->created_by }}</td>
-
+                                            <td>{{ $questionnaire->code }}</td>
+                                            <td>{{ $questionnaire->title }}</td>
+                                            <td>{{ $questionnaire->description }}</td>
+                                            <td>{{ $questionnaire->version }}</td>
+                                            <td>{{ $questionnaire->created_by }}</td>
                                             <td>
-                                                <form action="{{ route('questionnaires.destroy', $questionnaire->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('questionnaires.show', $questionnaire->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('questionnaires.edit', $questionnaire->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                <form action="{{ route('admin.questionnaires.destroy', $questionnaire->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary" href="{{ route('admin.questionnaires.show', $questionnaire->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Ver') }}</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('admin.questionnaires.edit', $questionnaire->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Seguro que desea eliminar?') ? this.closest('form').submit() : false;">
+                                                        <i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}
+                                                    </button>
                                                 </form>
                                             </td>
                                         </tr>

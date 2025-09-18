@@ -18,7 +18,7 @@ class PostVoteController extends Controller
     {
         $postVotes = PostVote::paginate();
 
-        return view('post-vote.index', compact('postVotes'))
+        return view('admin.post-vote.index', compact('postVotes'))
             ->with('i', ($request->input('page', 1) - 1) * $postVotes->perPage());
     }
 
@@ -29,7 +29,7 @@ class PostVoteController extends Controller
     {
         $postVote = new PostVote();
 
-        return view('post-vote.create', compact('postVote'));
+        return view('admin.post-vote.create', compact('postVote'));
     }
 
     /**
@@ -39,7 +39,7 @@ class PostVoteController extends Controller
     {
         PostVote::create($request->validated());
 
-        return Redirect::route('post-votes.index')
+        return Redirect::route('admin.post-votes.index')
             ->with('success', 'PostVote created successfully.');
     }
 
@@ -50,7 +50,7 @@ class PostVoteController extends Controller
     {
         $postVote = PostVote::find($id);
 
-        return view('post-vote.show', compact('postVote'));
+        return view('admin.post-vote.show', compact('postVote'));
     }
 
     /**
@@ -60,7 +60,7 @@ class PostVoteController extends Controller
     {
         $postVote = PostVote::find($id);
 
-        return view('post-vote.edit', compact('postVote'));
+        return view('admin.post-vote.edit', compact('postVote'));
     }
 
     /**
@@ -70,7 +70,7 @@ class PostVoteController extends Controller
     {
         $postVote->update($request->validated());
 
-        return Redirect::route('post-votes.index')
+        return Redirect::route('admin.post-votes.index')
             ->with('success', 'PostVote updated successfully');
     }
 
@@ -78,7 +78,7 @@ class PostVoteController extends Controller
     {
         PostVote::find($id)->delete();
 
-        return Redirect::route('post-votes.index')
+        return Redirect::route('admin.post-votes.index')
             ->with('success', 'PostVote deleted successfully');
     }
 }

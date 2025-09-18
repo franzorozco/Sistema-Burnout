@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Student Rotation
+    {{ __('Actualizar') }} Rotación de Estudiante
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Student Rotation</span>
+                        <span class="card-title">{{ __('Actualizar') }} Rotación de Estudiante</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('student-rotations.update', $studentRotation->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
+                        <form method="POST" action="{{ route('admin.student-rotations.update', $studentRotation->id) }}" role="form" enctype="multipart/form-data">
+                            @method('PATCH')
                             @csrf
 
-                            @include('student-rotation.form')
+                            @include('admin.student-rotation.form')
 
                         </form>
                     </div>

@@ -18,7 +18,7 @@ class RotationController extends Controller
     {
         $rotations = Rotation::paginate();
 
-        return view('rotation.index', compact('rotations'))
+        return view('admin.rotation.index', compact('rotations'))
             ->with('i', ($request->input('page', 1) - 1) * $rotations->perPage());
     }
 
@@ -29,7 +29,7 @@ class RotationController extends Controller
     {
         $rotation = new Rotation();
 
-        return view('rotation.create', compact('rotation'));
+        return view('admin.rotation.create', compact('rotation'));
     }
 
     /**
@@ -39,7 +39,7 @@ class RotationController extends Controller
     {
         Rotation::create($request->validated());
 
-        return Redirect::route('rotations.index')
+        return Redirect::route('admin.rotations.index')
             ->with('success', 'Rotation created successfully.');
     }
 
@@ -50,7 +50,7 @@ class RotationController extends Controller
     {
         $rotation = Rotation::find($id);
 
-        return view('rotation.show', compact('rotation'));
+        return view('admin.rotation.show', compact('rotation'));
     }
 
     /**
@@ -60,7 +60,7 @@ class RotationController extends Controller
     {
         $rotation = Rotation::find($id);
 
-        return view('rotation.edit', compact('rotation'));
+        return view('admin.rotation.edit', compact('rotation'));
     }
 
     /**
@@ -70,7 +70,7 @@ class RotationController extends Controller
     {
         $rotation->update($request->validated());
 
-        return Redirect::route('rotations.index')
+        return Redirect::route('admin.rotations.index')
             ->with('success', 'Rotation updated successfully');
     }
 
@@ -78,7 +78,7 @@ class RotationController extends Controller
     {
         Rotation::find($id)->delete();
 
-        return Redirect::route('rotations.index')
+        return Redirect::route('admin.rotations.index')
             ->with('success', 'Rotation deleted successfully');
     }
 }

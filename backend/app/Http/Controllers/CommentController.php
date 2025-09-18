@@ -18,7 +18,7 @@ class CommentController extends Controller
     {
         $comments = Comment::paginate();
 
-        return view('comment.index', compact('comments'))
+        return view('admin.comment.index', compact('comments'))
             ->with('i', ($request->input('page', 1) - 1) * $comments->perPage());
     }
 
@@ -29,7 +29,7 @@ class CommentController extends Controller
     {
         $comment = new Comment();
 
-        return view('comment.create', compact('comment'));
+        return view('admin.comment.create', compact('comment'));
     }
 
     /**
@@ -39,7 +39,7 @@ class CommentController extends Controller
     {
         Comment::create($request->validated());
 
-        return Redirect::route('comments.index')
+        return Redirect::route('admin.comments.index')
             ->with('success', 'Comment created successfully.');
     }
 
@@ -50,7 +50,7 @@ class CommentController extends Controller
     {
         $comment = Comment::find($id);
 
-        return view('comment.show', compact('comment'));
+        return view('admin.comment.show', compact('comment'));
     }
 
     /**
@@ -60,7 +60,7 @@ class CommentController extends Controller
     {
         $comment = Comment::find($id);
 
-        return view('comment.edit', compact('comment'));
+        return view('admin.comment.edit', compact('comment'));
     }
 
     /**
@@ -70,7 +70,7 @@ class CommentController extends Controller
     {
         $comment->update($request->validated());
 
-        return Redirect::route('comments.index')
+        return Redirect::route('admin.comments.index')
             ->with('success', 'Comment updated successfully');
     }
 
@@ -78,7 +78,7 @@ class CommentController extends Controller
     {
         Comment::find($id)->delete();
 
-        return Redirect::route('comments.index')
+        return Redirect::route('admin.comments.index')
             ->with('success', 'Comment deleted successfully');
     }
 }

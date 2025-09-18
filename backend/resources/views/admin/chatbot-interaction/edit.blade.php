@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Chatbot Interaction
+    Actualizar Interacción con Chatbot
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Chatbot Interaction</span>
+                        <span class="card-title">Actualizar Interacción con Chatbot</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('chatbot-interactions.update', $chatbotInteraction->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
+                        <form method="POST" action="{{ route('admin.chatbot-interactions.update', $chatbotInteraction->id) }}" role="form" enctype="multipart/form-data">
+                            @method('PATCH')
                             @csrf
 
-                            @include('chatbot-interaction.form')
+                            @include('admin.chatbot-interaction.form')
 
                         </form>
                     </div>

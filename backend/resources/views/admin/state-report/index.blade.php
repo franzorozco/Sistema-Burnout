@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    State Reports
+    Reportes de Estado
 @endsection
 
 @section('content')
@@ -13,12 +13,12 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('State Reports') }}
+                                Reportes de Estado
                             </span>
 
-                             <div class="float-right">
-                                <a href="{{ route('state-reports.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Create New') }}
+                            <div class="float-right">
+                                <a href="{{ route('admin.state-reports.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  Crear Nuevo
                                 </a>
                               </div>
                         </div>
@@ -35,16 +35,14 @@
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
-									<th >Student Profile Id</th>
-									<th >Report Date</th>
-									<th >Mood</th>
-									<th >Energy Level</th>
-									<th >Sleep Hours</th>
-									<th >Stress Score</th>
-									<th >Symptoms</th>
-									<th >Location</th>
-
+                                        <th>Perfil de Estudiante</th>
+                                        <th>Fecha del Reporte</th>
+                                        <th>Estado de Ánimo</th>
+                                        <th>Nivel de Energía</th>
+                                        <th>Horas de Sueño</th>
+                                        <th>Puntaje de Estrés</th>
+                                        <th>Síntomas</th>
+                                        <th>Ubicación</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -52,23 +50,28 @@
                                     @foreach ($stateReports as $stateReport)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $stateReport->student_profile_id }}</td>
-										<td >{{ $stateReport->report_date }}</td>
-										<td >{{ $stateReport->mood }}</td>
-										<td >{{ $stateReport->energy_level }}</td>
-										<td >{{ $stateReport->sleep_hours }}</td>
-										<td >{{ $stateReport->stress_score }}</td>
-										<td >{{ $stateReport->symptoms }}</td>
-										<td >{{ $stateReport->location }}</td>
+                                            <td>{{ $stateReport->student_profile_id }}</td>
+                                            <td>{{ $stateReport->report_date }}</td>
+                                            <td>{{ $stateReport->mood }}</td>
+                                            <td>{{ $stateReport->energy_level }}</td>
+                                            <td>{{ $stateReport->sleep_hours }}</td>
+                                            <td>{{ $stateReport->stress_score }}</td>
+                                            <td>{{ $stateReport->symptoms }}</td>
+                                            <td>{{ $stateReport->location }}</td>
 
                                             <td>
-                                                <form action="{{ route('state-reports.destroy', $stateReport->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('state-reports.show', $stateReport->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('state-reports.edit', $stateReport->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                <form action="{{ route('admin.state-reports.destroy', $stateReport->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary" href="{{ route('admin.state-reports.show', $stateReport->id) }}">
+                                                        <i class="fa fa-fw fa-eye"></i> Ver
+                                                    </a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('admin.state-reports.edit', $stateReport->id) }}">
+                                                        <i class="fa fa-fw fa-edit"></i> Editar
+                                                    </a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Está seguro de eliminar este registro?') ? this.closest('form').submit() : false;">
+                                                        <i class="fa fa-fw fa-trash"></i> Eliminar
+                                                    </button>
                                                 </form>
                                             </td>
                                         </tr>

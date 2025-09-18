@@ -46,12 +46,5 @@ class Resource extends Model
         return $this->belongsTo(\App\Models\User::class, 'author_id', 'id');
     }
     
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function user()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'validated_by', 'id');
-    }
     
 }

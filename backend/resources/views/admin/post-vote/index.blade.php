@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    Post Votes
+    {{ __('Votos de Publicaciones') }}
 @endsection
 
 @section('content')
@@ -13,12 +13,12 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Post Votes') }}
+                                {{ __('Votos de Publicaciones') }}
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('post-votes.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Create New') }}
+                                <a href="{{ route('admin.post-votes.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                  {{ __('Crear Nuevo') }}
                                 </a>
                               </div>
                         </div>
@@ -35,12 +35,10 @@
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
-									<th >User Id</th>
-									<th >Post Id</th>
-									<th >Comment Id</th>
-									<th >Vote</th>
-
+                                        <th>Usuario Id</th>
+                                        <th>Publicación Id</th>
+                                        <th>Comentario Id</th>
+                                        <th>Voto</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -48,19 +46,17 @@
                                     @foreach ($postVotes as $postVote)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $postVote->user_id }}</td>
-										<td >{{ $postVote->post_id }}</td>
-										<td >{{ $postVote->comment_id }}</td>
-										<td >{{ $postVote->vote }}</td>
-
+                                            <td>{{ $postVote->user_id }}</td>
+                                            <td>{{ $postVote->post_id }}</td>
+                                            <td>{{ $postVote->comment_id }}</td>
+                                            <td>{{ $postVote->vote }}</td>
                                             <td>
-                                                <form action="{{ route('post-votes.destroy', $postVote->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('post-votes.show', $postVote->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('post-votes.edit', $postVote->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                <form action="{{ route('admin.post-votes.destroy', $postVote->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary" href="{{ route('admin.post-votes.show', $postVote->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Ver') }}</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('admin.post-votes.edit', $postVote->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Estás seguro de eliminar?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}</button>
                                                 </form>
                                             </td>
                                         </tr>

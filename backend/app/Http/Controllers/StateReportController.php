@@ -18,7 +18,7 @@ class StateReportController extends Controller
     {
         $stateReports = StateReport::paginate();
 
-        return view('state-report.index', compact('stateReports'))
+        return view('admin.state-report.index', compact('stateReports'))
             ->with('i', ($request->input('page', 1) - 1) * $stateReports->perPage());
     }
 
@@ -29,7 +29,7 @@ class StateReportController extends Controller
     {
         $stateReport = new StateReport();
 
-        return view('state-report.create', compact('stateReport'));
+        return view('admin.state-report.create', compact('stateReport'));
     }
 
     /**
@@ -39,7 +39,7 @@ class StateReportController extends Controller
     {
         StateReport::create($request->validated());
 
-        return Redirect::route('state-reports.index')
+        return Redirect::route('admin.state-reports.index')
             ->with('success', 'StateReport created successfully.');
     }
 
@@ -50,7 +50,7 @@ class StateReportController extends Controller
     {
         $stateReport = StateReport::find($id);
 
-        return view('state-report.show', compact('stateReport'));
+        return view('admin.state-report.show', compact('stateReport'));
     }
 
     /**
@@ -60,7 +60,7 @@ class StateReportController extends Controller
     {
         $stateReport = StateReport::find($id);
 
-        return view('state-report.edit', compact('stateReport'));
+        return view('admin.state-report.edit', compact('stateReport'));
     }
 
     /**
@@ -70,7 +70,7 @@ class StateReportController extends Controller
     {
         $stateReport->update($request->validated());
 
-        return Redirect::route('state-reports.index')
+        return Redirect::route('admin.state-reports.index')
             ->with('success', 'StateReport updated successfully');
     }
 
@@ -78,7 +78,7 @@ class StateReportController extends Controller
     {
         StateReport::find($id)->delete();
 
-        return Redirect::route('state-reports.index')
+        return Redirect::route('admin.state-reports.index')
             ->with('success', 'StateReport deleted successfully');
     }
 }

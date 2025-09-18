@@ -18,7 +18,7 @@ class StudentRotationController extends Controller
     {
         $studentRotations = StudentRotation::paginate();
 
-        return view('student-rotation.index', compact('studentRotations'))
+        return view('admin.student-rotation.index', compact('studentRotations'))
             ->with('i', ($request->input('page', 1) - 1) * $studentRotations->perPage());
     }
 
@@ -29,7 +29,7 @@ class StudentRotationController extends Controller
     {
         $studentRotation = new StudentRotation();
 
-        return view('student-rotation.create', compact('studentRotation'));
+        return view('admin.student-rotation.create', compact('studentRotation'));
     }
 
     /**
@@ -39,7 +39,7 @@ class StudentRotationController extends Controller
     {
         StudentRotation::create($request->validated());
 
-        return Redirect::route('student-rotations.index')
+        return Redirect::route('admin.student-rotations.index')
             ->with('success', 'StudentRotation created successfully.');
     }
 
@@ -50,7 +50,7 @@ class StudentRotationController extends Controller
     {
         $studentRotation = StudentRotation::find($id);
 
-        return view('student-rotation.show', compact('studentRotation'));
+        return view('admin.student-rotation.show', compact('studentRotation'));
     }
 
     /**
@@ -60,7 +60,7 @@ class StudentRotationController extends Controller
     {
         $studentRotation = StudentRotation::find($id);
 
-        return view('student-rotation.edit', compact('studentRotation'));
+        return view('admin.student-rotation.edit', compact('studentRotation'));
     }
 
     /**
@@ -70,7 +70,7 @@ class StudentRotationController extends Controller
     {
         $studentRotation->update($request->validated());
 
-        return Redirect::route('student-rotations.index')
+        return Redirect::route('admin.student-rotations.index')
             ->with('success', 'StudentRotation updated successfully');
     }
 
@@ -78,7 +78,7 @@ class StudentRotationController extends Controller
     {
         StudentRotation::find($id)->delete();
 
-        return Redirect::route('student-rotations.index')
+        return Redirect::route('admin.student-rotations.index')
             ->with('success', 'StudentRotation deleted successfully');
     }
 }

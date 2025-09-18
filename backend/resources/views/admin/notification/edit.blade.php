@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Notification
+    {{ __('Actualizar') }} Notificación
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Notification</span>
+                        <span class="card-title">{{ __('Actualizar') }} Notificación</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('notifications.update', $notification->id) }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.notifications.update', $notification->id) }}" role="form" enctype="multipart/form-data">
                             {{ method_field('PATCH') }}
                             @csrf
 
-                            @include('notification.form')
+                            @include('admin.notification.form')
 
                         </form>
                     </div>

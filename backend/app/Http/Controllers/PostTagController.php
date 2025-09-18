@@ -18,7 +18,7 @@ class PostTagController extends Controller
     {
         $postTags = PostTag::paginate();
 
-        return view('post-tag.index', compact('postTags'))
+        return view('admin.post-tag.index', compact('postTags'))
             ->with('i', ($request->input('page', 1) - 1) * $postTags->perPage());
     }
 
@@ -29,7 +29,7 @@ class PostTagController extends Controller
     {
         $postTag = new PostTag();
 
-        return view('post-tag.create', compact('postTag'));
+        return view('admin.post-tag.create', compact('postTag'));
     }
 
     /**
@@ -39,7 +39,7 @@ class PostTagController extends Controller
     {
         PostTag::create($request->validated());
 
-        return Redirect::route('post-tags.index')
+        return Redirect::route('admin.post-tags.index')
             ->with('success', 'PostTag created successfully.');
     }
 
@@ -50,7 +50,7 @@ class PostTagController extends Controller
     {
         $postTag = PostTag::find($id);
 
-        return view('post-tag.show', compact('postTag'));
+        return view('admin.post-tag.show', compact('postTag'));
     }
 
     /**
@@ -60,7 +60,7 @@ class PostTagController extends Controller
     {
         $postTag = PostTag::find($id);
 
-        return view('post-tag.edit', compact('postTag'));
+        return view('admin.post-tag.edit', compact('postTag'));
     }
 
     /**
@@ -70,7 +70,7 @@ class PostTagController extends Controller
     {
         $postTag->update($request->validated());
 
-        return Redirect::route('post-tags.index')
+        return Redirect::route('admin.post-tags.index')
             ->with('success', 'PostTag updated successfully');
     }
 
@@ -78,7 +78,7 @@ class PostTagController extends Controller
     {
         PostTag::find($id)->delete();
 
-        return Redirect::route('post-tags.index')
+        return Redirect::route('admin.post-tags.index')
             ->with('success', 'PostTag deleted successfully');
     }
 }

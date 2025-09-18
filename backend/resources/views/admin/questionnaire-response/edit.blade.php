@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Questionnaire Response
+    {{ __('Actualizar') }} Respuesta de Cuestionario
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Questionnaire Response</span>
+                        <span class="card-title">{{ __('Actualizar') }} Respuesta de Cuestionario</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('questionnaire-responses.update', $questionnaireResponse->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
+                        <form method="POST" action="{{ route('admin.questionnaire-responses.update', $questionnaireResponse->id) }}"  role="form" enctype="multipart/form-data">
+                            @method('PATCH')
                             @csrf
 
-                            @include('questionnaire-response.form')
+                            @include('admin.questionnaire-response.form')
 
                         </form>
                     </div>

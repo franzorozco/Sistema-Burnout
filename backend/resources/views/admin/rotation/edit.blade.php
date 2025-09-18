@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Rotation
+    {{ __('Actualizar') }} Rotación
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Rotation</span>
+                        <span class="card-title">{{ __('Actualizar') }} Rotación</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('rotations.update', $rotation->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
+                        <form method="POST" action="{{ route('admin.rotations.update', $rotation->id) }}"  role="form" enctype="multipart/form-data">
+                            @method('PATCH')
                             @csrf
 
-                            @include('rotation.form')
+                            @include('admin.rotation.form')
 
                         </form>
                     </div>

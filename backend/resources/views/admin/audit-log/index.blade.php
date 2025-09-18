@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    Audit Logs
+    Registros de Auditoría
 @endsection
 
 @section('content')
@@ -13,12 +13,12 @@
                         <div style="display: flex; justify-content: space-between; align-items: center;">
 
                             <span id="card_title">
-                                {{ __('Audit Logs') }}
+                                {{ __('Registros de Auditoría') }}
                             </span>
 
                              <div class="float-right">
-                                <a href="{{ route('audit-logs.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Create New') }}
+                                <a href="{{ route('admin.audit-logs.create') }}" class="btn btn-primary btn-sm float-right" data-placement="left">
+                                  {{ __('Crear nuevo') }}
                                 </a>
                               </div>
                         </div>
@@ -35,16 +35,14 @@
                                 <thead class="thead">
                                     <tr>
                                         <th>No</th>
-                                        
-									<th >User Id</th>
-									<th >Action</th>
-									<th >Table Name</th>
-									<th >Record Id</th>
-									<th >Old Data</th>
-									<th >New Data</th>
-									<th >Ip Address</th>
-									<th >User Agent</th>
-
+                                        <th>Usuario</th>
+                                        <th>Acción</th>
+                                        <th>Tabla</th>
+                                        <th>ID del Registro</th>
+                                        <th>Datos Anteriores</th>
+                                        <th>Datos Nuevos</th>
+                                        <th>IP</th>
+                                        <th>Agente de Usuario</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -52,23 +50,22 @@
                                     @foreach ($auditLogs as $auditLog)
                                         <tr>
                                             <td>{{ ++$i }}</td>
-                                            
-										<td >{{ $auditLog->user_id }}</td>
-										<td >{{ $auditLog->action }}</td>
-										<td >{{ $auditLog->table_name }}</td>
-										<td >{{ $auditLog->record_id }}</td>
-										<td >{{ $auditLog->old_data }}</td>
-										<td >{{ $auditLog->new_data }}</td>
-										<td >{{ $auditLog->ip_address }}</td>
-										<td >{{ $auditLog->user_agent }}</td>
+                                            <td>{{ $auditLog->user_id }}</td>
+                                            <td>{{ $auditLog->action }}</td>
+                                            <td>{{ $auditLog->table_name }}</td>
+                                            <td>{{ $auditLog->record_id }}</td>
+                                            <td>{{ $auditLog->old_data }}</td>
+                                            <td>{{ $auditLog->new_data }}</td>
+                                            <td>{{ $auditLog->ip_address }}</td>
+                                            <td>{{ $auditLog->user_agent }}</td>
 
                                             <td>
-                                                <form action="{{ route('audit-logs.destroy', $auditLog->id) }}" method="POST">
-                                                    <a class="btn btn-sm btn-primary " href="{{ route('audit-logs.show', $auditLog->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success" href="{{ route('audit-logs.edit', $auditLog->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Edit') }}</a>
+                                                <form action="{{ route('admin.audit-logs.destroy', $auditLog->id) }}" method="POST">
+                                                    <a class="btn btn-sm btn-primary" href="{{ route('admin.audit-logs.show', $auditLog->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Ver') }}</a>
+                                                    <a class="btn btn-sm btn-success" href="{{ route('admin.audit-logs.edit', $auditLog->id) }}"><i class="fa fa-fw fa-edit"></i> {{ __('Editar') }}</a>
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('Are you sure to delete?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Delete') }}</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Estás seguro de eliminar?') ? this.closest('form').submit() : false;"><i class="fa fa-fw fa-trash"></i> {{ __('Eliminar') }}</button>
                                                 </form>
                                             </td>
                                         </tr>

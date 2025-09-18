@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} State Report
+    Actualizar Reporte de Estado
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} State Report</span>
+                        <span class="card-title">Actualizar Reporte de Estado</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('state-reports.update', $stateReport->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
+                        <form method="POST" action="{{ route('admin.state-reports.update', $stateReport->id) }}" role="form" enctype="multipart/form-data">
+                            @method('PATCH')
                             @csrf
 
-                            @include('state-report.form')
+                            @include('admin.state-report.form')
 
                         </form>
                     </div>

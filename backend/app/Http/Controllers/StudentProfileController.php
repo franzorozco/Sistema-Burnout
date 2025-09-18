@@ -18,7 +18,7 @@ class StudentProfileController extends Controller
     {
         $studentProfiles = StudentProfile::paginate();
 
-        return view('student-profile.index', compact('studentProfiles'))
+        return view('admin.student-profile.index', compact('studentProfiles'))
             ->with('i', ($request->input('page', 1) - 1) * $studentProfiles->perPage());
     }
 
@@ -29,7 +29,7 @@ class StudentProfileController extends Controller
     {
         $studentProfile = new StudentProfile();
 
-        return view('student-profile.create', compact('studentProfile'));
+        return view('admin.student-profile.create', compact('studentProfile'));
     }
 
     /**
@@ -39,7 +39,7 @@ class StudentProfileController extends Controller
     {
         StudentProfile::create($request->validated());
 
-        return Redirect::route('student-profiles.index')
+        return Redirect::route('admin.student-profiles.index')
             ->with('success', 'StudentProfile created successfully.');
     }
 
@@ -50,7 +50,7 @@ class StudentProfileController extends Controller
     {
         $studentProfile = StudentProfile::find($id);
 
-        return view('student-profile.show', compact('studentProfile'));
+        return view('admin.student-profile.show', compact('studentProfile'));
     }
 
     /**
@@ -60,7 +60,7 @@ class StudentProfileController extends Controller
     {
         $studentProfile = StudentProfile::find($id);
 
-        return view('student-profile.edit', compact('studentProfile'));
+        return view('admin.student-profile.edit', compact('studentProfile'));
     }
 
     /**
@@ -70,7 +70,7 @@ class StudentProfileController extends Controller
     {
         $studentProfile->update($request->validated());
 
-        return Redirect::route('student-profiles.index')
+        return Redirect::route('admin.student-profiles.index')
             ->with('success', 'StudentProfile updated successfully');
     }
 
@@ -78,7 +78,7 @@ class StudentProfileController extends Controller
     {
         StudentProfile::find($id)->delete();
 
-        return Redirect::route('student-profiles.index')
+        return Redirect::route('admin.student-profiles.index')
             ->with('success', 'StudentProfile deleted successfully');
     }
 }

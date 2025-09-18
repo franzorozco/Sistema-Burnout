@@ -18,7 +18,7 @@ class AppointmentController extends Controller
     {
         $appointments = Appointment::paginate();
 
-        return view('appointment.index', compact('appointments'))
+        return view('admin.appointment.index', compact('appointments'))
             ->with('i', ($request->input('page', 1) - 1) * $appointments->perPage());
     }
 
@@ -29,7 +29,7 @@ class AppointmentController extends Controller
     {
         $appointment = new Appointment();
 
-        return view('appointment.create', compact('appointment'));
+        return view('admin.appointment.create', compact('appointment'));
     }
 
     /**
@@ -39,7 +39,7 @@ class AppointmentController extends Controller
     {
         Appointment::create($request->validated());
 
-        return Redirect::route('appointments.index')
+        return Redirect::route('admin.appointments.index')
             ->with('success', 'Appointment created successfully.');
     }
 
@@ -50,7 +50,7 @@ class AppointmentController extends Controller
     {
         $appointment = Appointment::find($id);
 
-        return view('appointment.show', compact('appointment'));
+        return view('admin.appointment.show', compact('appointment'));
     }
 
     /**
@@ -60,7 +60,7 @@ class AppointmentController extends Controller
     {
         $appointment = Appointment::find($id);
 
-        return view('appointment.edit', compact('appointment'));
+        return view('admin.appointment.edit', compact('appointment'));
     }
 
     /**
@@ -70,7 +70,7 @@ class AppointmentController extends Controller
     {
         $appointment->update($request->validated());
 
-        return Redirect::route('appointments.index')
+        return Redirect::route('admin.appointments.index')
             ->with('success', 'Appointment updated successfully');
     }
 
@@ -78,7 +78,7 @@ class AppointmentController extends Controller
     {
         Appointment::find($id)->delete();
 
-        return Redirect::route('appointments.index')
+        return Redirect::route('admin.appointments.index')
             ->with('success', 'Appointment deleted successfully');
     }
 }

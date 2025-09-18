@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Create') }} Questionnaire Item
+    {{ __('Crear') }} Ítem de Cuestionario
 @endsection
 
 @section('content')
@@ -11,13 +11,13 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Create') }} Questionnaire Item</span>
+                        <span class="card-title">{{ __('Crear') }} Ítem de Cuestionario</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('questionnaire-items.store') }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.questionnaire-items.store') }}" role="form" enctype="multipart/form-data">
                             @csrf
 
-                            @include('questionnaire-item.form')
+                            @include('admin.questionnaire-item.form')
 
                         </form>
                     </div>

@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ $appointment->name ?? __('Show') . " " . __('Appointment') }}
+    {{ $appointment->name ?? __('Ver') . " " . __('Cita') }}
 @endsection
 
 @section('content')
@@ -11,44 +11,42 @@
                 <div class="card">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Appointment</span>
+                            <span class="card-title">{{ __('Ver') }} Cita</span>
                         </div>
                         <div class="float-right">
-                            <a class="btn btn-primary btn-sm" href="{{ route('appointments.index') }}"> {{ __('Back') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('admin.appointments.index') }}"> {{ __('Volver') }}</a>
                         </div>
                     </div>
 
                     <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Student Profile Id:</strong>
-                                    {{ $appointment->student_profile_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Professional Id:</strong>
-                                    {{ $appointment->professional_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Scheduled At:</strong>
-                                    {{ $appointment->scheduled_at }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Duration Minutes:</strong>
-                                    {{ $appointment->duration_minutes }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Status:</strong>
-                                    {{ $appointment->status }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Notes:</strong>
-                                    {{ $appointment->notes }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Created By:</strong>
-                                    {{ $appointment->created_by }}
-                                </div>
-
+                        <div class="form-group mb-2 mb20">
+                            <strong>Id del Perfil del Estudiante:</strong>
+                            {{ $appointment->student_profile_id }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Id del Profesional:</strong>
+                            {{ $appointment->professional_id }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Programado Para:</strong>
+                            {{ $appointment->scheduled_at }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Duración (minutos):</strong>
+                            {{ $appointment->duration_minutes }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Estado:</strong>
+                            {{ $appointment->status }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Notas:</strong>
+                            {{ $appointment->notes }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Creado Por:</strong>
+                            {{ $appointment->created_by }}
+                        </div>
                     </div>
                 </div>
             </div>

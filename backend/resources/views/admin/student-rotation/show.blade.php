@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ $studentRotation->name ?? __('Show') . " " . __('Student Rotation') }}
+    {{ $studentRotation->name ?? __('Mostrar') . " " . __('Rotación de Estudiante') }}
 @endsection
 
 @section('content')
@@ -11,35 +11,35 @@
                 <div class="card">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Student Rotation</span>
+                            <span class="card-title">{{ __('Mostrar') }} Rotación de Estudiante</span>
                         </div>
                         <div class="float-right">
-                            <a class="btn btn-primary btn-sm" href="{{ route('student-rotations.index') }}"> {{ __('Back') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('admin.student-rotations.index') }}"> {{ __('Volver') }}</a>
                         </div>
                     </div>
 
                     <div class="card-body bg-white">
                         
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Student Profile Id:</strong>
-                                    {{ $studentRotation->student_profile_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Rotation Id:</strong>
-                                    {{ $studentRotation->rotation_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Assigned At:</strong>
-                                    {{ $studentRotation->assigned_at }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Shift Type:</strong>
-                                    {{ $studentRotation->shift_type }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Notes:</strong>
-                                    {{ $studentRotation->notes }}
-                                </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Id Perfil de Estudiante:</strong>
+                            {{ $studentRotation->student_profile_id }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Id Rotación:</strong>
+                            {{ $studentRotation->rotation_id }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Asignado En:</strong>
+                            {{ $studentRotation->assigned_at }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Tipo de Turno:</strong>
+                            {{ $studentRotation->shift_type }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Notas:</strong>
+                            {{ $studentRotation->notes }}
+                        </div>
 
                     </div>
                 </div>

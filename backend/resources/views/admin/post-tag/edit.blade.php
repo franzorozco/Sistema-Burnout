@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Update') }} Post Tag
+    {{ __('Actualizar') }} Etiqueta de Publicación
 @endsection
 
 @section('content')
@@ -11,14 +11,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Post Tag</span>
+                        <span class="card-title">{{ __('Actualizar') }} Etiqueta de Publicación</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('post-tags.update', $postTag->id) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
+                        <form method="POST" action="{{ route('admin.post-tags.update', $postTag->id) }}" role="form" enctype="multipart/form-data">
+                            @method('PATCH')
                             @csrf
 
-                            @include('post-tag.form')
+                            @include('admin.post-tag.form')
 
                         </form>
                     </div>

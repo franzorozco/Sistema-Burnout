@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Create') }} Post Vote
+    {{ __('Crear') }} Voto de Publicación
 @endsection
 
 @section('content')
@@ -11,13 +11,13 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Create') }} Post Vote</span>
+                        <span class="card-title">{{ __('Crear') }} Voto de Publicación</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('post-votes.store') }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.post-votes.store') }}" role="form" enctype="multipart/form-data">
                             @csrf
 
-                            @include('post-vote.form')
+                            @include('admin.post-vote.form')
 
                         </form>
                     </div>

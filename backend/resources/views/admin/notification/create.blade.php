@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ __('Create') }} Notification
+    {{ __('Crear') }} Notificación
 @endsection
 
 @section('content')
@@ -11,13 +11,13 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Create') }} Notification</span>
+                        <span class="card-title">{{ __('Crear') }} Notificación</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('notifications.store') }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('admin.notifications.store') }}" role="form" enctype="multipart/form-data">
                             @csrf
 
-                            @include('notification.form')
+                            @include('admin.notification.form')
 
                         </form>
                     </div>

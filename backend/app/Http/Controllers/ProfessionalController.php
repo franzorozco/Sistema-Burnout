@@ -18,7 +18,7 @@ class ProfessionalController extends Controller
     {
         $professionals = Professional::paginate();
 
-        return view('professional.index', compact('professionals'))
+        return view('admin.professional.index', compact('professionals'))
             ->with('i', ($request->input('page', 1) - 1) * $professionals->perPage());
     }
 
@@ -29,7 +29,7 @@ class ProfessionalController extends Controller
     {
         $professional = new Professional();
 
-        return view('professional.create', compact('professional'));
+        return view('admin.professional.create', compact('professional'));
     }
 
     /**
@@ -39,7 +39,7 @@ class ProfessionalController extends Controller
     {
         Professional::create($request->validated());
 
-        return Redirect::route('professionals.index')
+        return Redirect::route('admin.professionals.index')
             ->with('success', 'Professional created successfully.');
     }
 
@@ -50,7 +50,7 @@ class ProfessionalController extends Controller
     {
         $professional = Professional::find($id);
 
-        return view('professional.show', compact('professional'));
+        return view('admin.professional.show', compact('professional'));
     }
 
     /**
@@ -60,7 +60,7 @@ class ProfessionalController extends Controller
     {
         $professional = Professional::find($id);
 
-        return view('professional.edit', compact('professional'));
+        return view('admin.professional.edit', compact('professional'));
     }
 
     /**
@@ -70,7 +70,7 @@ class ProfessionalController extends Controller
     {
         $professional->update($request->validated());
 
-        return Redirect::route('professionals.index')
+        return Redirect::route('admin.professionals.index')
             ->with('success', 'Professional updated successfully');
     }
 
@@ -78,7 +78,7 @@ class ProfessionalController extends Controller
     {
         Professional::find($id)->delete();
 
-        return Redirect::route('professionals.index')
+        return Redirect::route('admin.professionals.index')
             ->with('success', 'Professional deleted successfully');
     }
 }

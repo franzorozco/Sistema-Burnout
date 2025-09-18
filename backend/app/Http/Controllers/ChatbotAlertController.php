@@ -18,7 +18,7 @@ class ChatbotAlertController extends Controller
     {
         $chatbotAlerts = ChatbotAlert::paginate();
 
-        return view('chatbot-alert.index', compact('chatbotAlerts'))
+        return view('admin.chatbot-alert.index', compact('chatbotAlerts'))
             ->with('i', ($request->input('page', 1) - 1) * $chatbotAlerts->perPage());
     }
 
@@ -29,7 +29,7 @@ class ChatbotAlertController extends Controller
     {
         $chatbotAlert = new ChatbotAlert();
 
-        return view('chatbot-alert.create', compact('chatbotAlert'));
+        return view('admin.chatbot-alert.create', compact('chatbotAlert'));
     }
 
     /**
@@ -39,7 +39,7 @@ class ChatbotAlertController extends Controller
     {
         ChatbotAlert::create($request->validated());
 
-        return Redirect::route('chatbot-alerts.index')
+        return Redirect::route('admin.chatbot-alerts.index')
             ->with('success', 'ChatbotAlert created successfully.');
     }
 
@@ -50,7 +50,7 @@ class ChatbotAlertController extends Controller
     {
         $chatbotAlert = ChatbotAlert::find($id);
 
-        return view('chatbot-alert.show', compact('chatbotAlert'));
+        return view('admin.chatbot-alert.show', compact('chatbotAlert'));
     }
 
     /**
@@ -60,7 +60,7 @@ class ChatbotAlertController extends Controller
     {
         $chatbotAlert = ChatbotAlert::find($id);
 
-        return view('chatbot-alert.edit', compact('chatbotAlert'));
+        return view('admin.chatbot-alert.edit', compact('chatbotAlert'));
     }
 
     /**
@@ -70,7 +70,7 @@ class ChatbotAlertController extends Controller
     {
         $chatbotAlert->update($request->validated());
 
-        return Redirect::route('chatbot-alerts.index')
+        return Redirect::route('admin.chatbot-alerts.index')
             ->with('success', 'ChatbotAlert updated successfully');
     }
 
@@ -78,7 +78,7 @@ class ChatbotAlertController extends Controller
     {
         ChatbotAlert::find($id)->delete();
 
-        return Redirect::route('chatbot-alerts.index')
+        return Redirect::route('admin.chatbot-alerts.index')
             ->with('success', 'ChatbotAlert deleted successfully');
     }
 }

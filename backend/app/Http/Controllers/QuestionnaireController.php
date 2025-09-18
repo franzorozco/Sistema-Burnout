@@ -18,7 +18,7 @@ class QuestionnaireController extends Controller
     {
         $questionnaires = Questionnaire::paginate();
 
-        return view('questionnaire.index', compact('questionnaires'))
+        return view('admin.questionnaire.index', compact('questionnaires'))
             ->with('i', ($request->input('page', 1) - 1) * $questionnaires->perPage());
     }
 
@@ -29,7 +29,7 @@ class QuestionnaireController extends Controller
     {
         $questionnaire = new Questionnaire();
 
-        return view('questionnaire.create', compact('questionnaire'));
+        return view('admin.questionnaire.create', compact('questionnaire'));
     }
 
     /**
@@ -39,7 +39,7 @@ class QuestionnaireController extends Controller
     {
         Questionnaire::create($request->validated());
 
-        return Redirect::route('questionnaires.index')
+        return Redirect::route('admin.questionnaires.index')
             ->with('success', 'Questionnaire created successfully.');
     }
 
@@ -50,7 +50,7 @@ class QuestionnaireController extends Controller
     {
         $questionnaire = Questionnaire::find($id);
 
-        return view('questionnaire.show', compact('questionnaire'));
+        return view('admin.questionnaire.show', compact('questionnaire'));
     }
 
     /**
@@ -60,7 +60,7 @@ class QuestionnaireController extends Controller
     {
         $questionnaire = Questionnaire::find($id);
 
-        return view('questionnaire.edit', compact('questionnaire'));
+        return view('admin.questionnaire.edit', compact('questionnaire'));
     }
 
     /**
@@ -70,7 +70,7 @@ class QuestionnaireController extends Controller
     {
         $questionnaire->update($request->validated());
 
-        return Redirect::route('questionnaires.index')
+        return Redirect::route('admin.questionnaires.index')
             ->with('success', 'Questionnaire updated successfully');
     }
 
@@ -78,7 +78,7 @@ class QuestionnaireController extends Controller
     {
         Questionnaire::find($id)->delete();
 
-        return Redirect::route('questionnaires.index')
+        return Redirect::route('admin.questionnaires.index')
             ->with('success', 'Questionnaire deleted successfully');
     }
 }

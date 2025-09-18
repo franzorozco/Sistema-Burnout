@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.admin')
 
 @section('template_title')
-    {{ $comment->name ?? __('Show') . " " . __('Comment') }}
+    {{ $comment->name ?? __('Ver') . " " . __('Comentario') }}
 @endsection
 
 @section('content')
@@ -11,36 +11,34 @@
                 <div class="card">
                     <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
                         <div class="float-left">
-                            <span class="card-title">{{ __('Show') }} Comment</span>
+                            <span class="card-title">{{ __('Ver') }} Comentario</span>
                         </div>
                         <div class="float-right">
-                            <a class="btn btn-primary btn-sm" href="{{ route('comments.index') }}"> {{ __('Back') }}</a>
+                            <a class="btn btn-primary btn-sm" href="{{ route('admin.comments.index') }}"> {{ __('Volver') }}</a>
                         </div>
                     </div>
 
                     <div class="card-body bg-white">
-                        
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Post Id:</strong>
-                                    {{ $comment->post_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>User Id:</strong>
-                                    {{ $comment->user_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Parent Comment Id:</strong>
-                                    {{ $comment->parent_comment_id }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Body:</strong>
-                                    {{ $comment->body }}
-                                </div>
-                                <div class="form-group mb-2 mb20">
-                                    <strong>Score:</strong>
-                                    {{ $comment->score }}
-                                </div>
-
+                        <div class="form-group mb-2 mb20">
+                            <strong>Id del Post:</strong>
+                            {{ $comment->post_id }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Id del Usuario:</strong>
+                            {{ $comment->user_id }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Id del Comentario Padre:</strong>
+                            {{ $comment->parent_comment_id }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Contenido:</strong>
+                            {{ $comment->body }}
+                        </div>
+                        <div class="form-group mb-2 mb20">
+                            <strong>Puntuación:</strong>
+                            {{ $comment->score }}
+                        </div>
                     </div>
                 </div>
             </div>
