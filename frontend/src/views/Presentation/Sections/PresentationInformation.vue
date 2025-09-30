@@ -11,22 +11,20 @@ import DefaultInfoCard from "../../../examples/cards/infoCards/DefaultInfoCard.v
         <div class="col-lg-4 ms-auto me-auto p-lg-4 mt-lg-0 mt-4">
           <RotatingCard>
             <RotatingCardFront
-              image="https://images.unsplash.com/photo-1569683795645-b62e50fbf103?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=987&q=80"
-              icon="touch_app"
-              title="Feel the <br /> Material Kit"
-              description="All the Bootstrap components that you need in a development have been
-        re-design with the new look."
+              image="https://images.pexels.com/photos/5217850/pexels-photo-5217850.jpeg"
+              icon="smart_toy"
+              title="Laiso <br /> Será tu mejor compañero"
+              description="Interactúa con nuestro chatbot para recibir apoyo emocional y recursos sobre salud mental, siempre disponible cuando lo necesites."
             />
 
             <RotatingCardBack
-              image="https://images.unsplash.com/photo-1498889444388-e67ea62c464b?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1365&q=80"
-              title="Discover More"
-              description="You will save a lot of time going from prototyping to full-functional
-                code because all elements are implemented."
+              image="https://images.pexels.com/photos/4098340/pexels-photo-4098340.jpeg"
+              title="Leer más"
+              description="Aqui puedes tener acceso a más información sobre nuestros servicios y cómo podemos ayudarte a mejorar tu bienestar mental."
               :action="[
                 {
                   route: './/sections/page-sections/hero-sections.html',
-                  label: 'Start with Headers',
+                  label: 'Ver más',
                 },
               ]"
             />
@@ -35,32 +33,28 @@ import DefaultInfoCard from "../../../examples/cards/infoCards/DefaultInfoCard.v
         <div class="col-lg-6 ms-auto">
           <div class="row justify-content-start">
             <DefaultInfoCard
-              icon="content_copy"
-              title="Full Documentation"
-              description="Built by developers for developers. Check the foundation and
-                  you will find everything inside our documentation."
+              icon="article"
+              title="Articulos y Recursos"
+              description="Puedes explorar una variedad de artículos y recursos informativos sobre salud mental, bienestar emocional y estrategias para manejar el estrés."
             />
             <DefaultInfoCard
-              icon="flip_to_front"
-              title="Bootstrap 5 Ready"
-              description="The world’s most popular front-end open source toolkit,
-                  featuring Sass variables and mixins."
+              icon="smart_toy"
+              title="Chat Bot de Apoyo"
+              description="Un asistente virtual diseñado para ofrecer apoyo emocional y recursos sobre salud mental."
             />
           </div>
           <div class="row justify-content-start mt-5">
             <DefaultInfoCard
               class="mt-3"
-              icon="price_change"
-              title="Save Time & Money"
-              description="Creating your design from scratch with dedicated designers can
-                be very expensive. Start with our Design System."
+              icon="medical_services"
+              title="Encuentra Ayuda Profesional"
+              description="Aquí puedes encontrar profesionales de la salud mental que pueden ayudarte en tu proceso de bienestar."
             />
             <DefaultInfoCard
               class="mt-3"
-              icon="devices"
-              title="Fully Responsive"
-              description="Regardless of the screen size, the website content will
-                  naturally fit the given resolution."
+              icon="dashboard"
+              title="Conoce nuestra Plataforma"
+              description="Esta plataforma está diseñada para ser fácil de usar y accesible desde cualquier dispositivo, brindándote la ayuda que necesitas en cualquier momento y lugar."
             />
           </div>
         </div>
