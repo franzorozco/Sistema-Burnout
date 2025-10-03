@@ -6,7 +6,8 @@ import router from "./router";
 // Nucleo Icons
 import "./assets/css/nucleo-icons.css";
 import "./assets/css/nucleo-svg.css";
-
+import "@fortawesome/fontawesome-free/css/all.css";
+// Material Icons
 import materialKit from "./material-kit";
 
 const app = createApp(App);

@@ -11,10 +11,20 @@ import DefaultCounterCard from "../../../examples/cards/counterCards/DefaultCoun
             <div class="col-md-4 position-relative">
               <DefaultCounterCard
                 color="success"
-                title="Coded Elements"
-                description="From buttons, to inputs, navbars, alerts or cards, you are
-                  covered"
-                :count="70"
+                title="Guias de apoyo"
+                description="Contamos con profesionales capacitados para brindarte la ayuda que necesitas"
+                :count="10"
+                suffix="+"
+                :duration="4000"
+                divider="vertical"
+              />
+            </div>
+            <div class="col-md-4 position-relative">
+              <DefaultCounterCard
+                color="success"
+                title="Articulos"
+                description="Explora nuestros artículos y recursos para obtener información valiosa sobre salud mental y bienestar"
+                :count="30"
                 suffix="+"
                 :duration="3000"
                 divider="vertical"
@@ -22,24 +32,10 @@ import DefaultCounterCard from "../../../examples/cards/counterCards/DefaultCoun
             </div>
             <div class="col-md-4 position-relative">
               <DefaultCounterCard
-                color="success"
-                title="Design Blocks"
-                description="Mix the sections, change the colors and unleash your
-                  creativity"
-                :count="15"
-                suffix="+"
-                :duration="3000"
-                divider="vertical"
-              />
-            </div>
-            <div class="col-md-4">
-              <DefaultCounterCard
-                color="success"
-                title="Pages"
-                description="Save 3-4 weeks of work when you use our pre-made pages for
-                  your website"
-                :count="4"
-                :duration="3000"
+                class="mt-3"
+                icon="dashboard"
+                title="Conoce nuestra Plataforma"
+                description="Esta plataforma está diseñada para ser fácil de usar y accesible desde cualquier dispositivo, brindándote la ayuda que necesitas en cualquier momento y lugar."
               />
             </div>
           </div>
