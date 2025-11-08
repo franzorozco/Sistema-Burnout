@@ -36,6 +36,10 @@ defineProps({
       ].includes(value);
     },
   },
+  icon: {
+    type: String,
+    default: "",
+  },
   divider: {
     validator(value) {
       return ["vertical", "horizontal"].includes(value);

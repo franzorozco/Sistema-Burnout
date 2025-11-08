@@ -7,8 +7,8 @@ import DefaultFooter from "../../examples/footers/FooterDefault.vue";
 import Header from "../../examples/Header.vue";
 import FilledInfoCard from "../../examples/cards/infoCards/FilledInfoCard.vue";
 
-//Vue Material Kit 2 components
-import MaterialSocialButton from "@/components/MaterialSocialButton.vue";
+/* //Vue Material Kit 2 components
+import MaterialSocialButton from "@/components/MaterialSocialButton.vue"; */
 
 // sections
 import PresentationCounter from "./Sections/PresentationCounter.vue";
@@ -20,14 +20,8 @@ import PresentationTestimonials from "./Sections/PresentationTestimonials.vue";
 import PresentationInformation from "./Sections/PresentationInformation.vue";
 
 //images
-import vueMkHeader from "@/assets/img/vue-mk-header.jpg";
-import wavesWhite from "@/assets/img/waves-white.svg";
-import logoBootstrap from "@/assets/img/logos/bootstrap5.jpg";
-import logoTailwind from "@/assets/img/logos/icon-tailwind.jpg";
-import logoVue from "@/assets/img/logos/vue.jpg";
-import logoAngular from "@/assets/img/logos/angular.jpg";
-import logoReact from "@/assets/img/logos/react.jpg";
-import logoSketch from "@/assets/img/logos/sketch.jpg";
+import vueMkHeader from "@/assets/img/psicologo1.jpg";
+import wavesWhite from "@/assets/img/encuesta.jpg";
 
 //hooks
 const body = document.getElementsByTagName("body")[0];
@@ -88,13 +82,13 @@ onUnmounted(() => {
           <FilledInfoCard
             class="p-4"
             :color="{ text: 'white', background: 'bg-gradient-success' }"
-            :icon="{ component: 'flag', color: 'white' }"
-            title="Getting Started"
-            description="Check the possible ways of working with our product and the necessary files for building your own project."
+            :icon="{ component: 'medical_services', color: 'white' }"
+            title="Conoce estinomios de otros internos"
+            description="Explora y familiarízate con los términos y conceptos clave relacionados con la salud mental y el bienestar emocional."
             :action="{
               route:
                 'https://www.creative-tim.com/learning-lab/vue/overview/material-kit/',
-              label: { text: 'Let\'s start', color: 'white' }
+              label: { text: 'Leer más', color: 'white' },
             }"
           />
         </div>
@@ -102,14 +96,13 @@ onUnmounted(() => {
           <FilledInfoCard
             class="px-lg-1 mt-lg-0 mt-4 p-4"
             height="h-100"
-            :icon="{ component: 'precision_manufacturing', color: 'success' }"
-            title="Plugins"
-            description="Get inspiration and have an overview about the plugins that we
-                used to create the Material Kit."
+            :icon="{ component: 'article', color: 'success' }"
+            title="Artículos y Recursos"
+            description="Explora una variedad de artículos y recursos informativos sobre salud mental, bienestar emocional y estrategias para manejar el estrés."
             :action="{
               route:
                 'https://www.creative-tim.com/learning-lab/vue/input/material-kit/',
-              label: { text: 'Read more' }
+              label: { text: 'Leer más' },
             }"
           />
         </div>
@@ -117,30 +110,29 @@ onUnmounted(() => {
           <FilledInfoCard
             class="px-lg-1 mt-lg-0 mt-4 p-4"
             :icon="{ component: 'receipt_long', color: 'success' }"
-            title="Utility Classes"
-            description="Material Kit is giving you a lot of pre-made elements. For those
-                who want flexibility, we included many utility classes."
+            title="Encuentra Ayuda Profesional"
+            description="Aquí puedes encontrar profesionales de la salud mental que pueden ayudarte en tu proceso de bienestar."
             :action="{
               route:
                 'https://www.creative-tim.com/learning-lab/vue/utilities/material-kit/',
-              label: { text: 'Read more' }
+              label: { text: 'Leer más' },
             }"
           />
         </div>
       </div>
     </div>
     <PresentationTestimonials />
-
+    <!-- ---- FEED ---- -->
     <div
-      class="container-fluid mt-sm-5 border-radius-xl"
+      class="container-fluid mt-sm-1 border-radius-xl"
       :style="{
-        background: 'linear-gradient(195deg, rgb(66, 66, 74), rgb(25, 25, 25))'
+        background: 'linear-gradient(195deg, rgb(66, 66, 74), rgb(25, 25, 25))',
       }"
     >
       <div
         class="page-header py-6 py-md-5 my-sm-3 mb-3 border-radius-xl"
         :style="{
-          backgroundImage: `url(${wavesWhite})`
+          backgroundImage: `url(${wavesWhite})`,
         }"
         loading="lazy"
       >
@@ -150,19 +142,18 @@ onUnmounted(() => {
             <div class="d-flex justify-content-center p-5">
               <div class="col-lg-8 ms-lg-5 text-center">
                 <h3 class="text-white">
-                  Do you love this awesome UI Kit from Vuejs & Bootstrap?
+                  Quieres realizar una encuesta sobre salud mental?
                 </h3>
                 <p class="text-white text-md">
-                  Cause if you do, it can be yours for FREE. Hit the button
-                  below to navigate to Creative Tim where you can <br />
-                  find the Design System in HTML. Start a new project or give an
-                  old Bootstrap project a new look!
+                  Puedes acceder a una encuesta diseñada para evaluar tu
+                  bienestar mental y emocional. Tus respuestas nos ayudarán a
+                  brindarte un mejor apoyo y recursos personalizados.
                 </p>
 
                 <a
                   href="https://www.creative-tim.com/product/vue-material-kit"
                   class="btn btn-sm mb-0 bg-gradient-success px-5 py-3 mt-4"
-                  >Download Now</a
+                  >Empezar Ahora</a
                 >
               </div>
             </div>
@@ -171,7 +162,7 @@ onUnmounted(() => {
       </div>
     </div>
 
-    <div class="container">
+    <!-- <div class="container">
       <div class="row">
         <div class="d-flex flex-column w-100 text-center p-5 mb-8">
           <h3>Available on these technologies</h3>
@@ -262,8 +253,8 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
-    </div>
-    <div class="py-5">
+    </div> -->
+    <!-- <div class="py-5">
       <div class="container">
         <div class="row">
           <div class="col-lg-5 ms-auto">
@@ -292,7 +283,7 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
   <DefaultFooter />
 </template>
