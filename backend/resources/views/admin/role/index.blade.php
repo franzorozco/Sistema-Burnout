@@ -49,7 +49,8 @@
                                             <td>{{ $role->name }}</td>
                                             <td>{{ $role->guard_name }}</td>
                                             <td>{{ $role->description }}</td>
-                                            <td>{{ $role->created_by }}</td>
+                                            <td>{{ $role->user?->name ?? 'N/A' }}</td>
+
                                             <td>
                                                 <form action="{{ route('admin.roles.destroy', $role->id) }}" method="POST">
                                                     <a class="btn btn-sm btn-primary" href="{{ route('admin.roles.show', $role->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Ver') }}</a>

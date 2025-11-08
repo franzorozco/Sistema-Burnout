@@ -51,7 +51,17 @@
                                             <td>{{ $questionnaire->title }}</td>
                                             <td>{{ $questionnaire->description }}</td>
                                             <td>{{ $questionnaire->version }}</td>
-                                            <td>{{ $questionnaire->created_by }}</td>
+                                            <td>
+                                                @if($questionnaire->user)
+                                                    {{ $questionnaire->user->name }} 
+                                                    {{ $questionnaire->user->paternal_surname }} 
+                                                    {{ $questionnaire->user->maternal_surname }}
+                                                    (ID: {{ $questionnaire->user->id }})
+                                                @else
+                                                    N/A
+                                                @endif
+                                            </td>
+
                                             <td>
                                                 <form action="{{ route('admin.questionnaires.destroy', $questionnaire->id) }}" method="POST">
                                                     <a class="btn btn-sm btn-primary" href="{{ route('admin.questionnaires.show', $questionnaire->id) }}"><i class="fa fa-fw fa-eye"></i> {{ __('Ver') }}</a>

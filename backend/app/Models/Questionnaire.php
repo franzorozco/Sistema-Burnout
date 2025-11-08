@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\QuestionnaireItem;
 
 /**
  * Class Questionnaire
@@ -34,7 +35,10 @@ class Questionnaire extends Model
      */
     protected $fillable = ['code', 'title', 'description', 'version', 'created_by'];
 
-
+    public function items()
+    {
+        return $this->hasMany(QuestionnaireItem::class);
+    }
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

@@ -74,7 +74,7 @@
         <button id="sendBtn" class="btn btn-primary">Enviar</button>
     </div>
 </div>
-
+ 
 <script>
     const chatMessages = document.getElementById('chatMessages');
     const sendBtn = document.getElementById('sendBtn');

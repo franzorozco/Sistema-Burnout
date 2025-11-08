@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 /**
  * Class QuestionnaireChoice
  *
@@ -19,7 +19,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class QuestionnaireChoice extends Model
 {
-    
+    use HasFactory;
     protected $perPage = 20;
 
     /**
@@ -33,6 +33,11 @@ class QuestionnaireChoice extends Model
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+    public function item()
+    {
+        return $this->belongsTo(QuestionnaireItem::class, 'item_id', 'id');
+    }
+    
     public function questionnaireItem()
     {
         return $this->belongsTo(\App\Models\QuestionnaireItem::class, 'item_id', 'id');

@@ -13,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
  * @property $assigned_at
  * @property $shift_type
  * @property $notes
- *
+ * 
  * @property StudentProfile $studentProfile
  * @property Rotation $rotation
  * @package App

@@ -22,10 +22,11 @@ class QuestionnaireRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'code' => 'required|string',
-			'title' => 'required|string',
-			'description' => 'string',
-			'version' => 'string',
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'version' => 'nullable|string|max:20',
+            'created_by' => 'nullable|exists:users,id',
         ];
     }
+
 }

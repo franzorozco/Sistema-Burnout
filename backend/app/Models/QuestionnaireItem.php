@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 /**
  * Class QuestionnaireItem
  *
@@ -21,7 +22,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class QuestionnaireItem extends Model
 {
-    
+    use HasFactory;
     protected $perPage = 20;
 
     /**
@@ -29,12 +30,19 @@ class QuestionnaireItem extends Model
      *
      * @var array<int, string>
      */
+    public $timestamps = false;
     protected $fillable = ['questionnaire_id', 'item_order', 'question_text', 'response_type', 'meta'];
 
 
+
+    public function choices()
+    {
+        return $this->hasMany(QuestionnaireChoice::class, 'item_id', 'id');
+    }
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
+
     public function questionnaire()
     {
         return $this->belongsTo(\App\Models\Questionnaire::class, 'questionnaire_id', 'id');

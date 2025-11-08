@@ -22,10 +22,16 @@ class QuestionnaireItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-			'questionnaire_id' => 'required',
-			'item_order' => 'required',
-			'question_text' => 'required|string',
-			'response_type' => 'required',
+            'questionnaire_id' => 'required|exists:questionnaires,id',
+            'item_order' => 'required|integer',
+            'question_text' => 'required|string',
+            'response_type' => 'required|string|in:likert,booleano,numero,texto,opcion',
+            'choices' => 'sometimes|array',
+            'choices.*.label' => 'required_with:choices|string',
+            'choices.*.value' => 'nullable|string',
+            'meta.min' => 'nullable|numeric',
+            'meta.max' => 'nullable|numeric',
         ];
     }
+
 }

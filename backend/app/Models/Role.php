@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * Class Role
@@ -22,9 +23,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
+
 class Role extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasRoles;
 
     protected $perPage = 20;
 
@@ -49,7 +51,9 @@ class Role extends Model
      */
     public function modelHasRoles()
     {
-        return $this->hasMany(\App\Models\ModelHasRole::class, 'id', 'role_id');
-    }
+        return $this->hasMany(\App\Models\ModelHasRole::class, 'role_id', 'id');
+    }   
+
     
 }
+ 

@@ -10,10 +10,17 @@ from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 import fitz  # PyMuPDF
 import traceback
+import pytesseract
+from PIL import Image
+import io
+
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+os.environ["TESSDATA_PREFIX"] = r"C:\Program Files\ Tesseract-OCR"
 
 load_dotenv()
 
-LLM_MODEL = os.getenv("LLM_MODEL", "llama3.2")
+LLM_MODEL = os.getenv("LLM_MODEL", "nomic-embed-text")
 LLM_URL = os.getenv("LLM_URL", "http://host.docker.internal:11434")  
 
 PERSIST_DIR = Path("vectordb")
@@ -32,49 +39,64 @@ class Query(BaseModel):
 
 @app.post("/ingest")
 async def ingest(file: UploadFile = File(...)):
-    """Sube archivo TXT/PDF y lo indexa en Chroma"""
+    """Sube archivo TXT/PDF y lo indexa en Chroma (con OCR automático si es necesario)."""
     try:
         content = await file.read()
-        text = ""
 
         if file.filename.lower().endswith(".txt"):
             text = content.decode("utf-8").strip()
+            docs = [Document(page_content=text)]
+
         elif file.filename.lower().endswith(".pdf"):
             pdf_doc = fitz.open(stream=content, filetype="pdf")
-            for page in pdf_doc:
-                text += page.get_text()
-            text = text.strip()
+            print(f"Total de páginas: {len(pdf_doc)}")
+            docs = []
+
+            for i, page in enumerate(pdf_doc):
+                page_text = page.get_text().strip()
+
+                if not page_text:
+                    print(f"Página {i+1}: sin texto, aplicando OCR...")
+                    zoom = 3.0  # alta resolución para mejor OCR
+                    mat = fitz.Matrix(zoom, zoom)
+                    pix = page.get_pixmap(matrix=mat)
+                    img = Image.open(io.BytesIO(pix.tobytes("png"))).convert("RGB")
+                    page_text = pytesseract.image_to_string(img, lang="spa").strip()
+
+                print(f"  Página {i+1}: {len(page_text)} caracteres extraídos")
+                if len(page_text) < 20:
+                    print(f"Página {i+1} parece vacía tras OCR")
+
+                if page_text:
+                    docs.append(Document(page_content=page_text))
+
         else:
             raise HTTPException(status_code=400, detail="Solo se aceptan archivos TXT o PDF.")
 
-        if not text:
+        if not docs:
             raise HTTPException(status_code=400, detail="El archivo está vacío o no se pudo extraer texto.")
 
-        docs = [Document(page_content=text)]
-        splitter = CharacterTextSplitter(chunk_size=800, chunk_overlap=100)
+        splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         chunks = splitter.split_documents(docs)
-
-        if not chunks:
-            raise HTTPException(status_code=400, detail="No se pudieron generar chunks del archivo.")
+        print(f"Total de chunks generados: {len(chunks)}")
 
         embeddings = get_embeddings()
         db = Chroma.from_documents(
             chunks,
-            embedding_function=embeddings,
+            embedding=embeddings,
             persist_directory=str(PERSIST_DIR)
         )
         db.persist()
 
+        print(f"Indexación completada. Total de chunks guardados: {len(chunks)}")
         return {"status": "ok", "chunks_indexed": len(chunks)}
 
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=f"Error al procesar el archivo: {str(e)}")
 
-
 @app.post("/ask")
 async def ask(q: Query):
-    """Consulta el índice y responde usando RAG + Ollama"""
     try:
         if not PERSIST_DIR.exists() or not any(PERSIST_DIR.iterdir()):
             raise HTTPException(status_code=400, detail="No hay base de vectores. Usa /ingest primero.")

@@ -51,7 +51,22 @@
                                             <td>{{ $questionnaireItem->item_order }}</td>
                                             <td>{{ $questionnaireItem->question_text }}</td>
                                             <td>{{ $questionnaireItem->response_type }}</td>
-                                            <td>{{ $questionnaireItem->meta }}</td>
+                                            <td>
+                                                @php
+                                                    $meta = json_decode($questionnaireItem->meta, true);
+                                                @endphp
+
+                                                @if(isset($meta['choices']) && is_array($meta['choices']))
+                                                    <ul class="mb-0">
+                                                        @foreach($meta['choices'] as $choice)
+                                                            <li>{{ $choice['label'] ?? $choice['value'] }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                @else
+                                                    {{ $questionnaireItem->meta }}
+                                                @endif
+                                            </td>
+
                                             <td>
                                                 <form action="{{ route('admin.questionnaire-items.destroy', $questionnaireItem->id) }}" method="POST">
                                                     <a class="btn btn-sm btn-primary" href="{{ route('admin.questionnaire-items.show', $questionnaireItem->id) }}">

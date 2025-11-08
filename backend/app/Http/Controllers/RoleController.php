@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Role;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 use App\Http\Requests\RoleRequest;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\View\View;
+
+use App\Models\User;
+use App\Models\Role;
+use Spatie\Permission\Models\Permission;
 
 class RoleController extends Controller
 {
@@ -27,9 +30,12 @@ class RoleController extends Controller
      */
     public function create(): View
     {
-        $role = new Role();
+        $permissions = Permission::all();
+        $users = User::all();
+        $role = null;
+        $rolePermissions = [];
 
-        return view('admin.role.create', compact('role'));
+        return view('admin.role.create', compact('permissions', 'users', 'role', 'rolePermissions'));
     }
 
     /**
@@ -37,8 +43,17 @@ class RoleController extends Controller
      */
     public function store(RoleRequest $request): RedirectResponse
     {
-        Role::create($request->validated());
+        // Crear el rol
+        $role = Role::create($request->validated());
+        $role->created_by = $request->input('created_by', auth()->id()); 
+        $role->save();
 
+        // Sincronizar permisos: evita duplicados
+        if ($request->has('permissions')) {
+            $role->syncPermissions($request->permissions); 
+        }
+
+        // Redireccionar para evitar re-envío de formulario al refrescar
         return Redirect::route('admin.roles.index')
             ->with('success', 'Role created successfully.');
     }
@@ -46,21 +61,21 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id): View
+    public function show(Role $role): View
     {
-        $role = Role::find($id);
-
         return view('admin.role.show', compact('role'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id): View
+    public function edit(Role $role): View
     {
-        $role = Role::find($id);
+        $permissions = Permission::all();
+        $users = User::all();
+        $rolePermissions = $role->permissions->pluck('name')->toArray();
 
-        return view('admin.role.edit', compact('role'));
+        return view('admin.role.edit', compact('role', 'permissions', 'rolePermissions', 'users'));
     }
 
     /**
@@ -70,13 +85,19 @@ class RoleController extends Controller
     {
         $role->update($request->validated());
 
+        // Sincronizar permisos sin duplicados
+        $role->syncPermissions($request->permissions ?? []);
+
         return Redirect::route('admin.roles.index')
             ->with('success', 'Role updated successfully');
     }
 
-    public function destroy($id): RedirectResponse
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Role $role): RedirectResponse
     {
-        Role::find($id)->delete();
+        $role->delete();
 
         return Redirect::route('admin.roles.index')
             ->with('success', 'Role deleted successfully');

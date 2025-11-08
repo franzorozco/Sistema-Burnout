@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\QuestionnaireRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\User;
 
 class QuestionnaireController extends Controller
 {
@@ -28,8 +29,8 @@ class QuestionnaireController extends Controller
     public function create(): View
     {
         $questionnaire = new Questionnaire();
-
-        return view('admin.questionnaire.create', compact('questionnaire'));
+        $users = User::all();
+        return view('admin.questionnaire.create', compact('questionnaire', 'users'));
     }
 
     /**
@@ -59,8 +60,8 @@ class QuestionnaireController extends Controller
     public function edit($id): View
     {
         $questionnaire = Questionnaire::find($id);
-
-        return view('admin.questionnaire.edit', compact('questionnaire'));
+        $users = User::all();
+        return view('admin.questionnaire.edit', compact('questionnaire', 'users'));
     }
 
     /**
@@ -81,4 +82,43 @@ class QuestionnaireController extends Controller
         return Redirect::route('admin.questionnaires.index')
             ->with('success', 'Questionnaire deleted successfully');
     }
+
+    public function generateCode(Request $request)
+    {
+        $title = $request->input('title');
+
+        // Convertir a mayúsculas, reemplazar espacios por guiones
+        $baseCode = strtoupper(str_replace(' ', '-', $title));
+
+        // Opcional: agregar número aleatorio o consecutivo
+        $uniqueCode = $baseCode . '-' . rand(100, 999);
+
+        return response()->json(['code' => $uniqueCode]);
+    }
+
+    public function generateVersion(Request $request)
+    {
+        $currentVersion = $request->input('current_version');
+        $questionnaireId = $request->input('questionnaire_id');
+
+        if ($questionnaireId && $currentVersion) {
+            // Si ya existe, incrementar versión
+            $parts = explode('.', $currentVersion);
+
+            if (count($parts) == 2) {
+                $major = (int)$parts[0];
+                $minor = (int)$parts[1] + 1;
+                $newVersion = $major . '.' . $minor;
+            } else {
+                $newVersion = $currentVersion . '.1'; // fallback
+            }
+        } else {
+            // Si es nuevo, empezar en 1.0
+            $newVersion = "1.0";
+        }
+
+        return response()->json(['version' => $newVersion]);
+    }
+
+
 }

@@ -37,7 +37,14 @@ Route::resource('student-profiles', StudentProfileController::class);
 Route::resource('rotations', RotationController::class);
 Route::resource('student-rotations', StudentRotationController::class);
 Route::resource('questionnaires', QuestionnaireController::class);
+Route::post('questionnaires/generate-code',[QuestionnaireController::class, 'generateCode'])
+    ->name('questionnaires.generateCode');
+Route::post('questionnaires/generate-version', [QuestionnaireController::class, 'generateVersion'])
+    ->name('questionnaires.generateVersion');
+
 Route::resource('questionnaire-items', QuestionnaireItemController::class);
+Route::get('questionnaire/{id}/next-order', [QuestionnaireItemController::class, 'getNextOrder']);
+
 Route::resource('questionnaire-choices', QuestionnaireChoiceController::class);
 Route::resource('questionnaire-responses', QuestionnaireResponseController::class);
 Route::resource('state-reports', StateReportController::class);

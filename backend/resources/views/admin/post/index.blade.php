@@ -29,7 +29,11 @@
                             <p>{{ $message }}</p>
                         </div>
                     @endif
-
+                    @if ($message = Session::get('error'))
+                        <div class="alert alert-danger m-4">
+                            <p>{{ $message }}</p>
+                        </div>
+                    @endif
                     <div class="card-body bg-white">
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">

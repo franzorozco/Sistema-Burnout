@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\StudentRotationRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use App\Models\StudentProfile;
+use App\Models\Rotation;
 
 class StudentRotationController extends Controller
 {
@@ -28,11 +30,12 @@ class StudentRotationController extends Controller
     public function create(): View
     {
         $studentRotation = new StudentRotation();
+        $students = StudentProfile::all(); // Todos los perfiles de estudiantes
+        $rotations = Rotation::all();      // Todas las rotaciones
 
-        return view('admin.student-rotation.create', compact('studentRotation'));
+        return view('admin.student-rotation.create', compact('studentRotation', 'students', 'rotations'));
     }
-
-    /**
+        /**
      * Store a newly created resource in storage.
      */
     public function store(StudentRotationRequest $request): RedirectResponse
@@ -59,8 +62,10 @@ class StudentRotationController extends Controller
     public function edit($id): View
     {
         $studentRotation = StudentRotation::find($id);
+        $students = StudentProfile::all();
+        $rotations = Rotation::all();
 
-        return view('admin.student-rotation.edit', compact('studentRotation'));
+        return view('admin.student-rotation.edit', compact('studentRotation', 'students', 'rotations'));
     }
 
     /**
