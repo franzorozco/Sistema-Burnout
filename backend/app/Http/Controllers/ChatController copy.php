@@ -22,9 +22,6 @@ class ChatController extends Controller
 
         $query = $request->input('query');
 
-        
-
-
         // Definir la personalidad del chat
         $systemPrompt =     "Eres un asistente virtual Laiso,especializado en medicina preventiva y psicología, enfocado en la prevención del burnout. 
                             Responde siempre de manera empática, calmada y profesional. 

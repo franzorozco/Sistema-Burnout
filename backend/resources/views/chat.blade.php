@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chat Burnout IA</title>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
@@ -120,16 +122,31 @@
         addTyping();
 
         try {
-            const response = await fetch('{{ route("chat.ask") }}', {
+            const response = await fetch('http://127.0.0.1:8081/chat/ask', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document
+                        .querySelector('meta[name="csrf-token"]')
+                        .getAttribute('content')
                 },
-                body: JSON.stringify({ query })
+                body: JSON.stringify({ query }) // ← AQUÍ va la coma correcta
             });
 
-            const data = await response.json();
+
+
+            let data;
+
+            try {
+                data = await response.json();
+            } catch (e) {
+                removeTyping();
+                addMessage('Error: el servidor devolvió una respuesta inválida.', 'bot');
+                console.error("Respuesta no JSON:", e);
+                return;
+            }
+
             removeTyping();
             addMessage(data.answer || 'No se recibió respuesta del servidor RAG.', 'bot');
 
@@ -139,7 +156,7 @@
             console.error(error);
         }
     }
-
+ 
     sendBtn.addEventListener('click', sendQuery);
     queryInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
@@ -147,6 +164,7 @@
             sendQuery();
         }
     });
+
 </script>
 </body>
 </html>
