@@ -5,7 +5,8 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
+                    {{-- Cambiamos el enlace para que apunte al home del frontend --}}
+                    <a href="http://127.0.0.1:3000/">
                         {{-- Reemplazamos el logo de Laravel por el de Unifranz --}}
                         {{-- Asegúrate de que la imagen esté en /public/img/logo-unifranz.png --}}
                         <img src="{{ asset('img/logo-unifranz.png') }}" alt="Logo Unifranz" class="block h-9 w-auto" />
