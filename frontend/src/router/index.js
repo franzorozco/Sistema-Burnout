@@ -25,6 +25,7 @@ import ElToggles from "../layouts/sections/elements/toggles/TogglesView.vue";
 import ElTypography from "../layouts/sections/elements/typography/TypographyView.vue";
 import BlogView from "../views/LandingPages/Blog/BlogView.vue";
 import ArticulosView from "../views/LandingPages/Articulos/ArticulosView.vue";
+import TestRapidoView from "../views/LandingPages/TestRapido/TestRapidoView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -158,6 +159,11 @@ const router = createRouter({
       path: "/articulos",
       name: "articulos",
       component: ArticulosView,
+    },
+    {
+      path: "/test-rapido",
+      name: "test-rapido",
+      component: TestRapidoView,
     },
   ],
 });
