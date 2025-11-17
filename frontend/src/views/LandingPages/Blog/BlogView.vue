@@ -188,9 +188,7 @@ onUnmounted(() => {
     v-for="post in posts"
     :key="`modal-${post.id}`"
     :post-id="post.id"
-    @submit-comment="
-      (commentData) => addCommentToPost({ ...commentData, postId: post.id })
-    "
+    @submit-comment="addCommentToPost"
   />
   <FooterDefault />
 </template>

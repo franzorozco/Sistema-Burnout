@@ -1,6 +1,5 @@
 <script setup>
 import { defineProps, defineEmits } from "vue";
-import CommentModal from "./CommentModal.vue";
 import MaterialButton from "../../../../components/MaterialButton.vue";
 
 // Props y Emits
@@ -12,14 +11,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["add-comment"]);
-
-// Manejador para el evento del modal
-const handleCommentSubmit = (commentData) => {
-  emit("add-comment", {
-    postId: props.post.id,
-    ...commentData,
-  });
-};
 
 // Función para mostrar estrellas
 const getStars = (rating) => {
@@ -76,8 +67,6 @@ const getStars = (rating) => {
         Comentar
       </MaterialButton>
     </div>
-
-    <CommentModal :post-id="post.id" @submit-comment="handleCommentSubmit" />
   </div>
 </template>
 
