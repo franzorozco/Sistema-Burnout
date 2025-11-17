@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ProfessionalRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ProfessionalController extends Controller
 {
@@ -16,7 +17,7 @@ class ProfessionalController extends Controller
      */
     public function index(Request $request): View
     {
-        $professionals = Professional::paginate();
+        $professionals = $this->buildQuery($request)->paginate(15);
 
         return view('admin.professional.index', compact('professionals'))
             ->with('i', ($request->input('page', 1) - 1) * $professionals->perPage());
@@ -80,5 +81,41 @@ class ProfessionalController extends Controller
 
         return Redirect::route('admin.professionals.index')
             ->with('success', 'Professional deleted successfully');
+    }
+
+    /**
+     * Build query applying filters from request.
+     */
+    protected function buildQuery(Request $request)
+    {
+        $query = Professional::query();
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+        if ($request->filled('profession')) {
+            $query->where('profession', 'like', '%'.$request->profession.'%');
+        }
+        if ($request->filled('license_number')) {
+            $query->where('license_number', 'like', '%'.$request->license_number.'%');
+        }
+        if ($request->has('is_available') && $request->is_available !== '') {
+            $query->where('is_available', $request->is_available);
+        }
+
+        return $query->orderByDesc('id');
+    }
+
+    /**
+     * Export filtered professionals to PDF.
+     */
+    public function exportPdf(Request $request)
+    {
+        $professionals = $this->buildQuery($request)->get();
+        $filters = $request->only(['user_id','profession','license_number','is_available']);
+
+        $pdf = Pdf::loadView('admin.professional.pdf', compact('professionals', 'filters'));
+
+        return $pdf->download('professionals_report_'.now()->format('Ymd_His').'.pdf');
     }
 }

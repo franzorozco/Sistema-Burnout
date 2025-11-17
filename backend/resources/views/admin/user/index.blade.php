@@ -34,6 +34,9 @@
                                         </span>
 
                                         <div class="float-right">
+                                            <a href="{{ route('admin.users.export', request()->query()) }}" class="btn btn-secondary btn-sm me-2" data-placement="left">
+                                                <i class="fa fa-file-pdf"></i> {{ __('Descargar PDF') }}
+                                            </a>
                                             <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
                                             {{ __('Create New') }}
                                             </a>
@@ -47,6 +50,32 @@
                                 @endif
 
                                 <div class="card-body bg-white">
+                                    <form method="GET" class="mb-3">
+                                        <div class="row g-2 align-items-end">
+                                            <div class="col-md-3">
+                                                <label class="form-label">Email</label>
+                                                <input type="text" name="email" value="{{ request('email') }}" class="form-control" placeholder="Email">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <label class="form-label">Nombre</label>
+                                                <input type="text" name="name" value="{{ request('name') }}" class="form-control" placeholder="Nombre">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <label class="form-label">Activo</label>
+                                                <select name="is_active" class="form-select">
+                                                    <option value="">Todos</option>
+                                                    <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Sí</option>
+                                                    <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>No</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-4 d-flex gap-2">
+                                                <button type="submit" class="btn btn-primary">Filtrar</button>
+                                                <a href="{{ route('admin.users.index') }}" class="btn btn-secondary">Limpiar</a>
+                                                <a href="{{ route('admin.users.export', request()->query()) }}" class="btn btn-outline-danger ms-auto">Descargar PDF</a>
+                                            </div>
+                                        </div>
+                                    </form>
+
                                     <div class="table-responsive">
                                         <table class="table table-striped table-hover">
                                             <thead class="thead">

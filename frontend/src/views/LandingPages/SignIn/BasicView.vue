@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted } from "vue";
+import { ref } from "vue";
 
 // example components
 import DefaultNavbar from "@/examples/navbars/NavbarDefault.vue";
@@ -15,6 +16,55 @@ import setMaterialInput from "@/assets/js/material-input";
 onMounted(() => {
   setMaterialInput();
 });
+
+// Simple handler: navigate to backend login page so user can authenticate
+async function handleLogin() {
+  try {
+    // 1) Initialize CSRF cookie for Laravel Sanctum
+    await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
+
+    // 2) Read input values (MaterialInput doesn't expose v-model here)
+    const emailEl = document.getElementById('email');
+    const passwordEl = document.getElementById('password');
+    const rememberEl = document.getElementById('rememberMe');
+    const email = emailEl ? emailEl.value : '';
+    const password = passwordEl ? passwordEl.value : '';
+    const remember = rememberEl ? rememberEl.checked : false;
+
+    // 3) Read XSRF cookie and include as header
+    function getCookie(name) {
+      const v = document.cookie.match('(?:^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+      return v ? decodeURIComponent(v[1]) : null;
+    }
+    const xsrf = getCookie('XSRF-TOKEN');
+
+    // 4) Send login request to proxied /login endpoint with credentials
+    const res = await fetch('/login', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-XSRF-TOKEN': xsrf || '',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({ email, password, remember }),
+    });
+
+    if (res.ok) {
+      // On success, redirect to admin dashboard on frontend origin (proxy will forward)
+      window.location.href = '/admin';
+      return;
+    }
+
+    // handle errors
+    const data = await res.json().catch(() => ({}));
+    const msg = data.message || 'Login failed';
+    alert(msg);
+  } catch (err) {
+    console.error(err);
+    alert('Error en el login: ' + (err.message || err));
+  }
+}
 </script>
 <template>
   <DefaultNavbar transparent />
@@ -63,7 +113,7 @@ onMounted(() => {
                 </div>
               </div>
               <div class="card-body">
-                <form role="form" class="text-start">
+                <form role="form" class="text-start" @submit.prevent="handleLogin">
                   <MaterialInput
                     id="email"
                     class="input-group-outline my-3"
@@ -90,8 +140,9 @@ onMounted(() => {
                       variant="gradient"
                       color="success"
                       fullWidth
-                      >Sign in</MaterialButton
                     >
+                      Sign in
+                    </MaterialButton>
                   </div>
                   <p class="mt-4 text-sm text-center">
                     Don't have an account?

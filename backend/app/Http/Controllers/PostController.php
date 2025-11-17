@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PostRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PostController extends Controller
 {
@@ -16,7 +17,7 @@ class PostController extends Controller
      */
     public function index(Request $request): View
     {
-        $posts = Post::paginate();
+        $posts = $this->buildQuery($request)->paginate(15);
 
         return view('admin.post.index', compact('posts'))
             ->with('i', ($request->input('page', 1) - 1) * $posts->perPage());
@@ -80,5 +81,32 @@ class PostController extends Controller
 
         return Redirect::route('admin.posts.index')
             ->with('success', 'Post deleted successfully');
+    }
+
+    protected function buildQuery(Request $request)
+    {
+        $query = Post::query();
+
+        if ($request->filled('user_id')) {
+            $query->where('user_id', $request->user_id);
+        }
+        if ($request->filled('title')) {
+            $query->where('title', 'like', '%'.$request->title.'%');
+        }
+        if ($request->has('is_anonymous') && $request->is_anonymous !== '') {
+            $query->where('is_anonymous', $request->is_anonymous);
+        }
+
+        return $query->orderByDesc('id');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $posts = $this->buildQuery($request)->get();
+        $filters = $request->only(['user_id','title','is_anonymous']);
+
+        $pdf = Pdf::loadView('admin.post.pdf', compact('posts', 'filters'));
+
+        return $pdf->download('posts_report_'.now()->format('Ymd_His').'.pdf');
     }
 }
