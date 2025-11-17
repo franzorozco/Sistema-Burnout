@@ -8,7 +8,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
         web: __DIR__.'/../routes/web.php',
 
-        // --- PASO 1: AÑADE ESTA LÍNEA PARA CARGAR TUS RUTAS API ---
+        // Esta línea carga tus rutas de API (¡Importante!)
         api: __DIR__.'/../routes/api.php',
 
         commands: __DIR__.'/../routes/console.php',
@@ -22,22 +22,21 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
 
-        // --- PASO 2: AÑADE ESTE BLOQUE PARA CONFIGURAR CORS ---
+        // Configuración de CORS
         $middleware->api(prepend: [
             \Illuminate\Http\Middleware\HandleCors::class,
         ]);
 
-        // Reconfigura el middleware para permitir tu frontend
         $middleware->replace(
             \Illuminate\Http\Middleware\HandleCors::class,
             \Illuminate\Http\Middleware\HandleCors::class, [
-                // Aplica a todas tus rutas que empiecen con 'api/'
                 'paths' => ['api/*'],
 
-                // La URL de tu frontend Vue
+                // --- ¡AQUÍ ESTÁ LA CORRECCIÓN! ---
+                // Le decimos a Laravel que acepte peticiones de tu frontend en el puerto 3000
                 'allowed_origins' => [
-                    'http://localhost:5173', // <-- Cambia esto si tu puerto es otro
-                    // 'http://tu-dominio-de-produccion.com' // Para el futuro
+                    'http://localhost:3000',
+                    'http://127.0.0.1:3000',
                 ],
 
                 'allowed_headers' => ['*'],
@@ -45,8 +44,6 @@ return Application::configure(basePath: dirname(__DIR__))
                 'supports_credentials' => false,
             ]
         );
-        // --- FIN DEL BLOQUE CORS ---
-
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

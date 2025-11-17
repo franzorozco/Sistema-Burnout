@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
-import { Modal } from "bootstrap"; // Importante para lanzar el Pop-up
+import { Modal } from "bootstrap";
+import axios from "axios"; // <-- PASO 1: IMPORTAR AXIOS
 
 // --- Componentes ---
 import NavbarDefault from "../../../examples/navbars/NavbarDefault.vue";
@@ -49,17 +50,16 @@ const isComplete = computed(() => {
   return Object.keys(answers.value).length === questions.value.length;
 });
 
-// <-- NUEVO: Función para resetear el formulario
+// Función para resetear el formulario
 const resetForm = () => {
   answers.value = {};
   score.value = 0;
-  // Opcional: Desplaza la ventana al inicio
   window.scrollTo(0, 0);
 };
 
-// <-- NUEVO: Variable para guardar la instancia del Modal
+// Variable para guardar la instancia del Modal
 let modalInstance = null;
-const resultModalRef = ref(null); // Ref para el elemento del DOM
+const resultModalRef = ref(null);
 
 // 5. Función de Envío
 const submitTest = async () => {
@@ -93,23 +93,32 @@ const submitTest = async () => {
     raw: answers.value,
   };
 
-  // --- ⚠️ CONEXIÓN AL BACKEND ⚠️ ---
-  console.log("Payload listo para enviar a Laravel:", payload);
+  // --- PASO 2: CONEXIÓN AL BACKEND (ACTIVADA) ---
+  console.log("Enviando payload a Laravel:", payload);
 
-  // import axios from "axios";
-  // try {
-  //   // Reemplaza esto con la URL de tu API de Laravel
-  //   const API_URL = "http://tu-backend.com/api/questionnaire-responses";
-  //   const response = await axios.post(API_URL, payload);
-  //   console.log("Respuesta guardada:", response.data);
-  //
-  // } catch (error) {
-  //   console.error("Error al guardar la respuesta:", error);
-  // }
+  try {
+    // ⚠️ ¡CAMBIA ESTA LÍNEA!
+    // Esta debe ser la URL donde corre tu backend (usualmente localhost:8000)
+    const API_URL = "http://127.0.0.1:8000/api/questionnaire-responses";
+
+    // Enviamos los datos usando axios
+    const response = await axios.post(API_URL, payload);
+
+    console.log("Respuesta guardada:", response.data);
+  } catch (error) {
+    // Si Laravel devuelve un error (ej. 422 por validación), lo veremos aquí
+    console.error(
+      "Error al guardar la respuesta:",
+      error.response?.data || error.message
+    );
+    // Mostramos un error al usuario
+    alert(
+      "Error: No se pudo guardar tu respuesta. Revisa la consola (F12) para más detalles."
+    );
+  }
   // --- FIN DE LA CONEXIÓN ---
 
-  // 5.4. Mostrar el Pop-up de Resultados
-  // <-- NUEVO: Usamos la instancia guardada
+  // 5.4. Mostrar el Pop-up de Resultados (esto se ejecuta si el envío fue exitoso o no)
   if (modalInstance) {
     modalInstance.show();
   }
@@ -122,14 +131,9 @@ onMounted(() => {
   body.classList.add("test-page");
   body.classList.add("bg-gray-200");
 
-  // <-- NUEVO: Preparamos el Modal y el listener
   resultModalRef.value = document.getElementById("resultModal");
   if (resultModalRef.value) {
-    // Guardamos la instancia del modal
     modalInstance = new Modal(resultModalRef.value);
-
-    // Añadimos un listener para el evento 'hidden.bs.modal'
-    // Este evento se dispara CUANDO el modal TERMINA de cerrarse
     resultModalRef.value.addEventListener("hidden.bs.modal", resetForm);
   }
 });
@@ -138,7 +142,6 @@ onUnmounted(() => {
   body.classList.remove("test-page");
   body.classList.remove("bg-gray-200");
 
-  // <-- NUEVO: Limpiamos el listener al salir de la página
   if (resultModalRef.value) {
     resultModalRef.value.removeEventListener("hidden.bs.modal", resetForm);
   }

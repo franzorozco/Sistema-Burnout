@@ -137,10 +137,10 @@ watch(
         Bunout
       </RouterLink>
       <a
-        href="https://www.creative-tim.com/product/vue-material-kit-pro"
+        href="http://127.0.0.1:8000/login"
         class="btn btn-sm bg-gradient-success mb-0 ms-auto d-lg-none d-block"
-        >Iniciar sesion</a
-      >
+        >Iniciar Sesión</a
+      > <!-- Corregido para móvil -->
       <button
         class="navbar-toggler shadow-none ms-2"
         type="button"
@@ -186,10 +186,10 @@ watch(
         <ul class="navbar-nav d-lg-block d-none">
           <li class="nav-item">
             <a
-              href="/pages/landing-pages/basic"
+              href="http://127.0.0.1:8000/login"
               class="btn btn-sm btn-round mb-0 me-1 bg-gradient-success"
-              >Iniciar Sesion</a
-            >
+              >Iniciar Sesión</a
+            > <!-- Corregido para escritorio -->
           </li>
         </ul>
       </div>
