@@ -5,6 +5,7 @@ import { ref, onMounted, onUnmounted } from "vue";
 import NavbarDefault from "../../../examples/navbars/NavbarDefault.vue";
 import FooterDefault from "../../../examples/footers/FooterDefault.vue";
 import Header from "../../../examples/Header.vue";
+import CommentModal from "./components/CommentModal.vue";
 import BlogPostCard from "./components/BlogPostCard.vue";
 import MaterialTextArea from "../../../components/MaterialTextArea.vue";
 import MaterialButton from "../../../components/MaterialButton.vue";
@@ -182,5 +183,14 @@ onUnmounted(() => {
     </section>
   </div>
 
+  <!-- Renderizar todos los modales aquí, en un nivel superior del DOM -->
+  <CommentModal
+    v-for="post in posts"
+    :key="`modal-${post.id}`"
+    :post-id="post.id"
+    @submit-comment="
+      (commentData) => addCommentToPost({ ...commentData, postId: post.id })
+    "
+  />
   <FooterDefault />
 </template>

@@ -24,6 +24,8 @@ import ElProgressBars from "../layouts/sections/elements/progress-bars/ProgressB
 import ElToggles from "../layouts/sections/elements/toggles/TogglesView.vue";
 import ElTypography from "../layouts/sections/elements/typography/TypographyView.vue";
 import BlogView from "../views/LandingPages/Blog/BlogView.vue";
+import ArticulosView from "../views/LandingPages/Articulos/ArticulosView.vue";
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -151,6 +153,11 @@ const router = createRouter({
       path: "/blog",
       name: "blog",
       component: BlogView,
+    },
+    {
+      path: "/articulos",
+      name: "articulos",
+      component: ArticulosView,
     },
   ],
 });
