@@ -162,15 +162,25 @@ watch(
       >
         <ul class="navbar-nav navbar-nav-hover ms-auto">
           <li class="nav-item mx-2">
-            <a href="#" class="nav-link d-flex align-items-center">Blog</a>
+            <RouterLink to="/blog" class="nav-link d-flex align-items-center">
+              Blog
+            </RouterLink>
           </li>
           <li class="nav-item mx-2">
-            <a href="#" class="nav-link d-flex align-items-center"
-              >Test Rapido</a
+            <RouterLink
+              to="/test-rapido"
+              class="nav-link d-flex align-items-center"
             >
+              Test Rapido
+            </RouterLink>
           </li>
           <li class="nav-item mx-2">
-            <a href="#" class="nav-link d-flex align-items-center">Articulos</a>
+            <RouterLink
+              to="/articulos"
+              class="nav-link d-flex align-items-center"
+            >
+              Articulos
+            </RouterLink>
           </li>
         </ul>
         <ul class="navbar-nav d-lg-block d-none">
