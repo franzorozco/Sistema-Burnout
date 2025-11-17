@@ -12,7 +12,7 @@ import ArticuloCard from "./components/ArticuloCard.vue";
 const articles = ref([
   {
     id: 1,
-    image: "https://source.unsplash.com/random/800x600/?doctor,stress",
+    image: "https://images.pexels.com/photos/4101143/pexels-photo-4101143.jpeg",
     title: "El Síndrome de Burnout en Profesionales de la Salud",
     description:
       "Un análisis profundo sobre las causas, síntomas y consecuencias del burnout en el personal médico y de enfermería.",
@@ -20,7 +20,7 @@ const articles = ref([
   },
   {
     id: 2,
-    image: "https://source.unsplash.com/random/800x600/?meditation,calm",
+    image: "https://images.pexels.com/photos/5412153/pexels-photo-5412153.jpeg",
     title: "Técnicas de Mindfulness para Reducir el Estrés",
     description:
       "Descubre cómo 10 minutos de mindfulness al día pueden cambiar drásticamente tu percepción del estrés laboral.",
@@ -28,7 +28,7 @@ const articles = ref([
   },
   {
     id: 3,
-    image: "https://source.unsplash.com/random/800x600/?work,life,balance",
+    image: "https://images.pexels.com/photos/7176288/pexels-photo-7176288.jpeg",
     title: "Equilibrio Trabajo-Vida: Clave para la Salud Mental",
     description:
       "Estrategias para delimitar el horario laboral y fomentar un descanso efectivo, esencial para la recuperación mental.",
@@ -36,7 +36,7 @@ const articles = ref([
   },
   {
     id: 4,
-    image: "https://source.unsplash.com/random/800x600/?hospital,team",
+    image: "https://images.pexels.com/photos/7176297/pexels-photo-7176297.jpeg",
     title: "La Importancia del Apoyo entre Colegas",
     description:
       "Cómo fomentar un ambiente de trabajo colaborativo y de apoyo mutuo puede prevenir el agotamiento individual.",
@@ -44,7 +44,7 @@ const articles = ref([
   },
   {
     id: 5,
-    image: "https://source.unsplash.com/random/800x600/?sleep,relax",
+    image: "https://images.pexels.com/photos/5217839/pexels-photo-5217839.jpeg",
     title: "El Impacto del Sueño en el Rendimiento",
     description:
       "No subestimes el poder del descanso. Un análisis sobre la relación directa entre la falta de sueño y el error médico.",
@@ -52,7 +52,7 @@ const articles = ref([
   },
   {
     id: 6,
-    image: "https://source.unsplash.com/random/800x600/?nutrition,healthy",
+    image: "https://images.pexels.com/photos/8560663/pexels-photo-8560663.jpeg",
     title: "Nutrición y Estrés: ¿Qué Comer en Turnos Largos?",
     description:
       "Guía rápida de alimentos y snacks saludables para mantener la energía y reducir la ansiedad durante las guardias.",
@@ -85,8 +85,9 @@ onUnmounted(() => {
     <div
       class="page-header min-vh-25"
       :style="{
+        paddingTop: '100px',
         backgroundImage:
-          'url(https://source.unsplash.com/random/1600x900/?library,reading)',
+          'url(https://images.pexels.com/photos/7579320/pexels-photo-7579320.jpeg)',
       }"
       loading="lazy"
     >
@@ -104,19 +105,19 @@ onUnmounted(() => {
     </div>
   </Header>
 
-  <div class="card card-body blur shadow-blur mx-3 mx-md-4 mt-n6 mb-4">
-    <section class="container py-5">
+  <section class="py-4">
+    <div class="container">
       <div class="row">
         <div
           v-for="article in articles"
           :key="article.id"
-          class="col-lg-4 col-md-6 mb-4"
+          class="col-lg-4 col-md-6 mb-4 d-flex"
         >
           <ArticuloCard :article="article" />
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 
   <FooterDefault />
 </template>

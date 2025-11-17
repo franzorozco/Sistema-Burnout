@@ -38,7 +38,7 @@ const props = defineProps({
       </p>
     </div>
 
-    <div class="card-footer pt-0 border-0">
+    <!-- <div class="card-footer pt-0 border-0">
       <MaterialButton
         :is="'a'"
         :href="article.link"
@@ -51,7 +51,7 @@ const props = defineProps({
       >
         Leer Más
       </MaterialButton>
-    </div>
+    </div> -->
   </div>
 </template>
 

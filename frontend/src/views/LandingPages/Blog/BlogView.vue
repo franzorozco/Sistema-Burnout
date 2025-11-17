@@ -120,8 +120,9 @@ onUnmounted(() => {
     <div
       class="page-header min-vh-25"
       :style="{
+        paddingTop: '100px',
         backgroundImage:
-          'url(https://source.unsplash.com/random/1600x900/?hospital,calm)',
+          'url(https://images.pexels.com/photos/5699430/pexels-photo-5699430.jpeg)',
       }"
       loading="lazy"
     >
@@ -139,9 +140,9 @@ onUnmounted(() => {
     </div>
   </Header>
 
-  <div class="card card-body blur shadow-blur mx-3 mx-md-4 mt-n6 mb-4">
-    <section class="container py-5">
-      <div class="row">
+  <section class="py-4">
+    <div class="container">
+      <div class="row mb-5">
         <div class="col-lg-8 mx-auto">
           <div class="card shadow-lg">
             <div class="card-header">
@@ -168,10 +169,7 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
-    </section>
-
-    <section class="container py-3">
-      <div class="row">
+      <div class="row mt-4">
         <div
           v-for="post in posts"
           :key="post.id"
@@ -180,8 +178,8 @@ onUnmounted(() => {
           <BlogPostCard :post="post" @add-comment="addCommentToPost" />
         </div>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
 
   <!-- Renderizar todos los modales aquí, en un nivel superior del DOM -->
   <CommentModal
