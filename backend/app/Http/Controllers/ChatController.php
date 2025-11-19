@@ -1,56 +1,104 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ChatController extends Controller
 {
-    // Mostrar la página del chat
-    public function index()
+    public function index(Request $request)
     {
+        if (!$request->session()->has('chat_session_id')) {
+            $request->session()->put('chat_session_id', Str::uuid()->toString());
+        }
         return view('chat');
     }
 
-    // Procesar la pregunta del usuario
     public function ask(Request $request)
     {
-        $request->validate([
-            'query' => 'required|string|max:500'
-        ]);
-
-        $query = $request->input('query');
-
-        
-
-
-        // Definir la personalidad del chat
-        $systemPrompt =     "Eres un asistente virtual Laiso,especializado en medicina preventiva y psicología, enfocado en la prevención del burnout. 
-                            Responde siempre de manera empática, calmada y profesional. 
-                            Ofrece recomendaciones prácticas y breves sobre manejo del estrés y autocuidado. 
-                            Evita diagnósticos médicos específicos; en su lugar, da sugerencias preventivas y motivación positiva.
-                            Habla de forma clara, cercana y respetuosa.";
-
-        // Combinar la personalidad con la pregunta real
-        $fullQuery = $systemPrompt . "\nPregunta del usuario: " . $query;
-
         try {
-            // Enviar la consulta al servidor RAG (FastAPI)
-            $response = Http::timeout(60)->post('http://localhost:8000/ask', [
-                'query' => $fullQuery
+            $request->validate([
+                'query' => 'required|string|max:500'
             ]);
 
-            $data = $response->json();
+            $query = $request->input('query');
 
-            // Obtener la respuesta del RAG o mensaje por defecto
-            $answer = $data['answer'] ?? 'No se recibió respuesta del servidor RAG.';
+            $sessionId = $request->session()->get('chat_session_id', Str::uuid()->toString());
+            $request->session()->put('chat_session_id', $sessionId);
+
+            $userId = Auth::check() ? Auth::id() : null;
+
+            // Llamada a FastAPI
+            try {
+                $response = Http::timeout(300)
+                    ->retry(3, 2000)
+                    ->post('http://127.0.0.1:8000/ask', [
+                        'query' => $query,
+                        'session_id' => $sessionId,
+                    ]);
+
+                $raw = $response->body();
+
+                try {
+                    $data = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+                } catch (\JsonException $e) {
+                    Log::error("JSON decode error:", ['error' => $e->getMessage(), 'raw' => $raw]);
+                    $data = ['error' => 'Invalid JSON', 'raw' => $raw];
+                }
+
+                $answer = $data['answer'] ?? "No se recibió respuesta del RAG.";
+                $answer = mb_convert_encoding($answer, 'UTF-8', 'UTF-8');
+
+            } catch (\Exception $e) {
+                Log::error("Error al llamar a FastAPI:", ['message' => $e->getMessage()]);
+                $answer = "Estoy procesando tu respuesta… dame unos segundos.";
+                $data = ['error' => $e->getMessage()];
+            }
+
+            // Guardar en la BD solo las columnas permitidas
+            $input_metadata = json_encode([
+                'ip' => $request->ip(),
+                'user_agent' => $request->header('User-Agent')
+            ], JSON_UNESCAPED_UNICODE);
+
+            $response_metadata = json_encode(
+                $data,
+                JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE | JSON_PARTIAL_OUTPUT_ON_ERROR
+            ) ?: '{}';
+
+            try {
+                DB::table('chatbot_interactions')->insert([
+                    'user_id'           => $userId,
+                    'session_id'        => $sessionId,
+                    'input_text'        => $query,
+                    'input_metadata'    => $input_metadata,
+                    'response_text'     => $answer,
+                    'response_metadata' => $response_metadata,
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Error al insertar en BD:", ['message' => $e->getMessage()]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'answer'  => $answer
+            ], 200);
 
         } catch (\Exception $e) {
-            $answer = "Error al conectar con RAG: " . $e->getMessage();
+            Log::error("Error inesperado en controlador ChatController:", ['message' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'answer'  => "Ocurrió un error inesperado.",
+                'error'   => $e->getMessage()
+            ], 200);
         }
-
-        // Devolver JSON para chat en tiempo real
-        return response()->json(['answer' => $answer]);
     }
 }
+ 

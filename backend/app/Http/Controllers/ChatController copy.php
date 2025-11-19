@@ -4,50 +4,98 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ChatController extends Controller
 {
-    // Mostrar la página del chat
-    public function index()
+    public function index(Request $request)
     {
+        // Crear session_id si no existe
+        if (!$request->session()->has('chat_session_id')) {
+            $request->session()->put('chat_session_id', Str::uuid()->toString());
+        }
+
         return view('chat');
     }
 
-    // Procesar la pregunta del usuario
     public function ask(Request $request)
     {
+        // Validar input
         $request->validate([
             'query' => 'required|string|max:500'
         ]);
 
         $query = $request->input('query');
 
-        // Definir la personalidad del chat
-        $systemPrompt =     "Eres un asistente virtual Laiso,especializado en medicina preventiva y psicología, enfocado en la prevención del burnout. 
-                            Responde siempre de manera empática, calmada y profesional. 
-                            Ofrece recomendaciones prácticas y breves sobre manejo del estrés y autocuidado. 
-                            Evita diagnósticos médicos específicos; en su lugar, da sugerencias preventivas y motivación positiva.
-                            Habla de forma clara, cercana y respetuosa.";
+        // Mantener la sesión del chat
+        $sessionId = $request->session()->get('chat_session_id');
+        if (!$sessionId) {
+            $sessionId = Str::uuid()->toString();
+            $request->session()->put('chat_session_id', $sessionId);
+        }
 
-        // Combinar la personalidad con la pregunta real
-        $fullQuery = $systemPrompt . "\nPregunta del usuario: " . $query;
+        $userId = Auth::check() ? Auth::id() : null;
+
+        // Solo enviamos la pregunta del usuario
+        $fullQuery = $query;
 
         try {
-            // Enviar la consulta al servidor RAG (FastAPI)
-            $response = Http::timeout(60)->post('http://localhost:8000/ask', [
-                'query' => $fullQuery
+            // Llamada al backend RAG
+            $response = Http::timeout(60)->post('http://127.0.0.1:8000/ask', [
+                'query' => $fullQuery,
+                'session_id' => $sessionId  // para memoria futura por sesión
             ]);
 
-            $data = $response->json();
+            Log::info("RAG response:", $response->json() ?? ['raw' => $response->body()]);
 
-            // Obtener la respuesta del RAG o mensaje por defecto
+            $data = $response->json();
+            if (!is_array($data)) $data = [];
+
             $answer = $data['answer'] ?? 'No se recibió respuesta del servidor RAG.';
 
         } catch (\Exception $e) {
             $answer = "Error al conectar con RAG: " . $e->getMessage();
+            $data = ['error' => $e->getMessage()];
         }
 
-        // Devolver JSON para chat en tiempo real
+        // Guardar interacción en BD
+        try {
+            $insertData = [
+                'user_id'           => $userId,
+                'session_id'        => $sessionId,
+                'input_text'        => $query,
+                'input_metadata'    => json_encode([
+                    'ip'         => $request->ip(),
+                    'user_agent' => $request->header('User-Agent')
+                ], JSON_UNESCAPED_UNICODE) ?: '{}', // fallback si falla json_encode
+
+                'response_text'     => $answer,
+                'response_metadata' => json_encode($data, JSON_UNESCAPED_UNICODE) ?: '{}',
+
+                'intent'            => null,
+                'sentiment'         => null,
+                'detected_risk'     => false,
+                'detected_keywords' => json_encode([], JSON_UNESCAPED_UNICODE),
+
+                'created_at'        => now(),
+                'updated_at'        => now(),
+            ];
+
+            DB::table('chatbot_interactions')->insert($insertData);
+
+            Log::info("INSERT OK ✔✔✔", $insertData);
+
+        } catch (\Exception $e) {
+            Log::error("ERROR INSERTANDO EN chatbot_interactions:", [
+                'error' => $e->getMessage(),
+                'data'  => $insertData ?? []
+            ]);
+        }
+
+
         return response()->json(['answer' => $answer]);
     }
 }
