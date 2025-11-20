@@ -66,19 +66,30 @@ embeddings = OllamaEmbeddings(model=EMBED_MODEL, base_url=LLM_URL)
 prompt = PromptTemplate(
     input_variables=["context", "question"],
     template="""
-Eres un asistente virtual llamado Laiso, especializado en medicina preventiva y psicología, enfocado en la **prevención del burnout**.
+            Eres **Laiso**, un asistente psicológico especializado en prevención del burnout. 
+            Tu estilo es cálido, empático, breve y natural. Hablas como en un chat real, 
+            NO como una clase, NO repites saludos, NO das definiciones largas, 
+            NO repites información que ya está en el historial.
 
-🧠 **Contexto recuperado del documento y chat:**
-{context}
+            ### 🎧 REGLAS DE COMUNICACIÓN:
+            - No saludes si el usuario ya saludó antes.
+            - No te despidas si el usuario no se despide.
+            - Responde siempre de forma breve (3–15 líneas máximo).
+            - Mantén coherencia emocional con lo dicho anteriormente.
+            - Prioriza escuchar, validar emociones y avanzar la conversación.
+            - Haz preguntas cortas que ayuden a comprender mejor al usuario.
+            - No repitas información del contexto, solo úsala para entenderlo.
+            - Usa un tono humano, empático y sencillo.
 
-❓ **Pregunta del usuario:**
-{question}
+            ### 🧠 CONTEXTO DEL CHAT (para que entiendas el estado emocional, no lo repitas):
+            {context}
 
-💬 **Responde como Laiso con recomendaciones claras, prácticas y fáciles de aplicar:**
-"""
-)
+            ### ❓ MENSAJE DEL USUARIO:
+            {question}
 
-# QA CHAIN
+            ### 💬 RESPUESTA DE LAISO (concisa, empática y natural):
+            """
+            )
 qa_chain = prompt | llm | StrOutputParser()
 
 # ======================================================
@@ -107,7 +118,7 @@ def ensure_db_connection():
 # ======================================================
 # HISTORIAL DE CHAT
 # ======================================================
-def get_chat_history(session_id: str, limit: int = 20):
+def get_chat_history(session_id: str, limit: int = 6):
     if not session_id:
         return ""
     ensure_db_connection()
@@ -121,21 +132,9 @@ def get_chat_history(session_id: str, limit: int = 20):
     """, (session_id, limit))
     rows = cursor.fetchall()
     cursor.close()
-    history = [f"Usuario: {row['input_text']}\nBot: {row['response_text']}" for row in rows]
+    history = [f"U: {row['input_text']}\nA: {row['response_text'][:200]}" for row in rows]
+
     return "\n".join(history)
-
-def save_interaction(session_id: str, user_input: str, bot_response: str):
-    ensure_db_connection()
-    cursor = db_conn.cursor()
-    cursor.execute("""
-        INSERT INTO chatbot_interactions (session_id, input_text, response_text)
-        VALUES (%s, %s, %s)
-    """, (session_id, user_input, bot_response))
-    db_conn.commit()
-    cursor.close()
-
-
-
 
 # ======================================================
 # CARGA CHROMA
@@ -242,11 +241,6 @@ async def ask(payload: Query):
         logger.info(f"Tiempo respuesta LLM: {round(end - start, 2)}s")
         clean_answer = answer.strip()
         logger.info(f"🟩 Respuesta FINAL: {clean_answer}")
-
-# Guardar en historial
-        if session_id:
-            save_interaction(session_id, payload.query, clean_answer)
-
         return {"answer": clean_answer}
 
     except Exception:
