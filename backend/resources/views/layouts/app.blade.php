@@ -7,31 +7,37 @@
 
         <title>{{ config('app.name', 'Laravel') }}</title>
 
-        <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        {{-- Usamos la misma fuente que tu login.blade.php para consistencia --}}
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet" />
 
-        <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        <style>
+            body {
+                /* Colores extraídos de tu logo */
+                background-color: #3a3a7a;
+                background-image: linear-gradient(135deg, #50a695ff 0%, #a1b7a5ff 50%, #719b78ff 100%);
+            }
+        </style>
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+        {{-- Eliminamos 'bg-gray-100' para que se vea el degradado del body --}}
+        <div class="min-h-screen">
             @include('layouts.navigation')
 
-            <!-- Page Heading -->
-            @isset($header)
+            @if (isset($header))
+                {{-- El header (ej. "Dashboard") se mantiene blanco para legibilidad --}}
                 <header class="bg-white shadow">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         {{ $header }}
                     </div>
                 </header>
-            @endisset
+            @endif
 
-            <!-- Page Content -->
             <main>
-                @yield('content')
+                {{ $slot }}
             </main>
-
         </div>
     </body>
 </html>

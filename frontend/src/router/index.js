@@ -23,6 +23,10 @@ import ElDropdowns from "../layouts/sections/elements/dropdowns/DropdownsView.vu
 import ElProgressBars from "../layouts/sections/elements/progress-bars/ProgressBarsView.vue";
 import ElToggles from "../layouts/sections/elements/toggles/TogglesView.vue";
 import ElTypography from "../layouts/sections/elements/typography/TypographyView.vue";
+import BlogView from "../views/LandingPages/Blog/BlogView.vue";
+import ArticulosView from "../views/LandingPages/Articulos/ArticulosView.vue";
+import TestRapidoView from "../views/LandingPages/TestRapido/TestRapidoView.vue";
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -145,6 +149,21 @@ const router = createRouter({
       path: "/sections/elements/typography",
       name: "el-typography",
       component: ElTypography,
+    },
+    {
+      path: "/blog",
+      name: "blog",
+      component: BlogView,
+    },
+    {
+      path: "/articulos",
+      name: "articulos",
+      component: ArticulosView,
+    },
+    {
+      path: "/test-rapido",
+      name: "test-rapido",
+      component: TestRapidoView,
     },
   ],
 });

@@ -5,8 +5,11 @@
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-gray-800" />
+                    {{-- Cambiamos el enlace para que apunte al home del frontend --}}
+                    <a href="http://127.0.0.1:3000/">
+                        {{-- Reemplazamos el logo de Laravel por el de Unifranz --}}
+                        {{-- Asegúrate de que la imagen esté en /public/img/logo-unifranz.png --}}
+                        <img src="{{ asset('img/logo-unifranz.png') }}" alt="Logo Unifranz" class="block h-9 w-auto" />
                     </a>
                 </div>
 
@@ -14,6 +17,20 @@
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
+                    </x-nav-link>
+                    {{-- Enlaces al frontend --}}
+                    <x-nav-link href="http://127.0.0.1:3000/blog" :active="false" target="_blank">
+                        {{ __('Blog') }}
+                    </x-nav-link>
+                    <x-nav-link href="http://127.0.0.1:3000/articulos" :active="false" target="_blank">
+                        {{ __('Artículos') }}
+                    </x-nav-link>
+                    <x-nav-link href="http://127.0.0.1:3000/test-rapido" :active="false" target="_blank">
+                        {{ __('Test Rápido') }}
+                    </x-nav-link>
+                    {{-- Enlace al Chatbot principal --}}
+                    <x-nav-link href="http://127.0.0.1:8081/chat" :active="false" target="_blank" class="text-purple-600 font-bold">
+                        {{ __('Ir al Chatbot') }}
                     </x-nav-link>
                 </div>
             </div>
@@ -69,6 +86,19 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            {{-- Enlaces responsivos al frontend --}}
+            <x-responsive-nav-link href="http://127.0.0.1:8081/blog" :active="false" target="_blank">
+                {{ __('Blog') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="http://127.0.0.1:8081/articulos" :active="false" target="_blank">
+                {{ __('Artículos') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="http://127.0.0.1:8081/test-rapido" :active="false" target="_blank">
+                {{ __('Test Rápido') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link href="http://127.0.0.1:8081/chat" :active="false" target="_blank">
+                {{ __('Ir al Chatbot') }}
             </x-responsive-nav-link>
         </div>
 

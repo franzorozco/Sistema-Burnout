@@ -2,62 +2,68 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * Class QuestionnaireResponse
- *
- * @property $id
- * @property $questionnaire_id
- * @property $student_profile_id
- * @property $user_id
- * @property $submitted_at
- * @property $summary_score
- * @property $raw
- * @property $created_at
- * @property $updated_at
- *
- * @property Questionnaire $questionnaire
- * @property StudentProfile $studentProfile
- * @property User $user
- * @package App
- * @mixin \Illuminate\Database\Eloquent\Builder
- */
 class QuestionnaireResponse extends Model
 {
-    
-    protected $perPage = 20;
+    use HasFactory;
 
     /**
-     * The attributes that are mass assignable.
+     * El nombre de la tabla asociada con el modelo.
+     */
+    protected $table = 'questionnaire_responses';
+
+    /**
+     * Los atributos que se pueden asignar masivamente.
+     * (¡ESTA ES LA PARTE MÁS IMPORTANTE DEL ARREGLO!)
      *
      * @var array<int, string>
      */
-    protected $fillable = ['questionnaire_id', 'student_profile_id', 'user_id', 'submitted_at', 'summary_score', 'raw'];
-
+    protected $fillable = [
+        'questionnaire_id',
+        'student_profile_id',
+        'user_id',
+        'summary_score',
+        'raw', // El JSON de respuestas
+    ];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Los atributos que deben ser convertidos a tipos nativos.
+     * Esto le dice a Laravel que 'raw' es un JSON.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'raw' => 'array', // o 'json'
+        'submitted_at' => 'datetime',
+    ];
+
+
+    // --- El "Flujo de las Tablas" (Relaciones) ---
+
+    /**
+     * Obtiene el cuestionario al que pertenece esta respuesta.
      */
     public function questionnaire()
     {
-        return $this->belongsTo(\App\Models\Questionnaire::class, 'questionnaire_id', 'id');
+        // Una respuesta pertenece a un cuestionario
+        return $this->belongsTo(Questionnaire::class);
     }
-    
+
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
-    public function studentProfile()
-    {
-        return $this->belongsTo(\App\Models\StudentProfile::class, 'student_profile_id', 'id');
-    }
-    
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Obtiene el usuario que envió esta respuesta (si aplica).
      */
     public function user()
     {
-        return $this->belongsTo(\App\Models\User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class);
     }
-    
+
+    /**
+     * Obtiene el perfil de estudiante que envió esta respuesta (si aplica).
+     */
+    public function studentProfile()
+    {
+        return $this->belongsTo(StudentProfile::class);
+    }
 }
