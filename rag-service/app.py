@@ -21,6 +21,8 @@ import fitz
 import pytesseract
 from PIL import Image
 import io
+import re
+import json
 
 # DB
 import mysql.connector
@@ -71,26 +73,88 @@ prompt = PromptTemplate(
             NO como una clase, NO repites saludos, NO das definiciones largas, 
             NO repites información que ya está en el historial.
 
-            ### 🎧 REGLAS DE COMUNICACIÓN:
+            ### REGLAS DE COMUNICACIÓN:
             - No saludes si el usuario ya saludó antes.
             - No te despidas si el usuario no se despide.
-            - Responde siempre de forma breve (3–15 líneas máximo).
+            - Responde siempre de forma breve (3–20 líneas máximo).
+            - No respondas con nombres que estén en el documento, solo usa el nombre que el usuario te da.
             - Mantén coherencia emocional con lo dicho anteriormente.
             - Prioriza escuchar, validar emociones y avanzar la conversación.
             - Haz preguntas cortas que ayuden a comprender mejor al usuario.
             - No repitas información del contexto, solo úsala para entenderlo.
             - Usa un tono humano, empático y sencillo.
 
-            ### 🧠 CONTEXTO DEL CHAT (para que entiendas el estado emocional, no lo repitas):
+            ### CONTEXTO DEL CHAT (para que entiendas el estado emocional, no lo repitas):
             {context}
 
-            ### ❓ MENSAJE DEL USUARIO:
+            ### MENSAJE DEL USUARIO:
             {question}
 
-            ### 💬 RESPUESTA DE LAISO (concisa, empática y natural):
+            ### RESPUESTA DE LAISO (concisa, empática y natural):
             """
             )
 qa_chain = prompt | llm | StrOutputParser()
+
+# ======================================================
+# DETECCIÓN DE SÍNTOMAS Y EMOCIONES
+# ======================================================
+
+RISK_KEYWORDS = [
+    "no puedo más", "no doy más", "agotado", "agotamiento",
+    "estresado", "estres", "cansado", "fatigado",
+    "ansioso", "ansiedad", "desesperado"
+]
+
+SYMPTOMS_MAP = {
+    "estres": ["estres", "estresado", "estresante"],
+    "agotamiento": ["agotado", "cansado", "fatigado"],
+    "ansiedad": ["ansioso", "ansiedad"],
+    "tristeza": ["triste", "bajoneado"],
+    "frustracion": ["frustrado", "molesto"],
+    "problemas_sueno": ["insomnio", "no puedo dormir", "duermo mal"],
+    "dolor_cabeza": ["dolor de cabeza", "migraña"],
+    "desmotivacion": ["desmotivado", "sin ganas", "pérdida de interés"]
+}
+
+
+def detect_symptoms_and_emotion(text: str):
+    text_lower = text.lower()
+
+    detected_symptoms = []
+    risk_flag = False
+
+    # síntomas semánticos
+    for symptom, keywords in SYMPTOMS_MAP.items():
+        if any(kw in text_lower for kw in keywords):
+            detected_symptoms.append(symptom)
+
+    # riesgo directo
+    if any(kw in text_lower for kw in RISK_KEYWORDS):
+        risk_flag = True
+
+    # análisis emocional simple
+    emotion = "neutral"
+    if any(x in text_lower for x in ["triste", "solo", "mal"]):
+        emotion = "tristeza"
+    if any(x in text_lower for x in ["estres", "presion"]):
+        emotion = "estres"
+    if any(x in text_lower for x in ["ansioso"]):
+        emotion = "ansiedad"
+
+    # sentimiento
+    if any(x in text_lower for x in ["bien", "contento", "tranquilo"]):
+        sentiment = "positivo"
+    elif any(x in text_lower for x in ["mal", "triste", "estres", "agotado"]):
+        sentiment = "negativo"
+    else:
+        sentiment = "neutral"
+
+    return {
+        "emotion": emotion,
+        "sentiment": sentiment,
+        "symptoms": detected_symptoms,
+        "risk": risk_flag
+    }
 
 # ======================================================
 # MYSQL
@@ -118,7 +182,10 @@ def ensure_db_connection():
 # ======================================================
 # HISTORIAL DE CHAT
 # ======================================================
-def get_chat_history(session_id: str, limit: int = 6):
+def get_chat_history(session_id: str, max_chars: int = 3000):
+    """
+    Devuelve todo el historial de la sesión, destacando la última interacción.
+    """
     if not session_id:
         return ""
     ensure_db_connection()
@@ -128,11 +195,26 @@ def get_chat_history(session_id: str, limit: int = 6):
         FROM chatbot_interactions
         WHERE session_id = %s
         ORDER BY created_at ASC
-        LIMIT %s
-    """, (session_id, limit))
+    """, (session_id,))
     rows = cursor.fetchall()
     cursor.close()
-    history = [f"U: {row['input_text']}\nA: {row['response_text'][:200]}" for row in rows]
+
+    if not rows:
+        return ""
+
+    # Construir historial
+    history = []
+    total_chars = 0
+    for row in rows[:-1]:
+        line = f"U: {row['input_text']}\nA: {row['response_text'][:200]}"
+        total_chars += len(line)
+        if total_chars > max_chars:
+            break
+        history.append(line)
+
+    last_row = rows[-1]
+    last_line = f"🟢 Última interacción del usuario:\nU: {last_row['input_text']}\nA: {last_row['response_text'][:200]}"
+    history.append(last_line)
 
     return "\n".join(history)
 
@@ -147,7 +229,6 @@ def load_chroma():
     db = Chroma(embedding_function=embeddings, persist_directory=str(PERSIST_DIR))
     retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
-# cargar si hay datos
 if any(PERSIST_DIR.iterdir()):
     load_chroma()
     logger.info("VectorDB cargado correctamente.")
@@ -158,6 +239,8 @@ if any(PERSIST_DIR.iterdir()):
 class Query(BaseModel):
     query: str
     session_id: str | None = None
+    user_id: int | None = None
+
 
 # ======================================================
 # ENDPOINT INGEST
@@ -219,10 +302,11 @@ async def ask(payload: Query):
         session_id = payload.session_id
         logger.info(f"🟦 Nueva pregunta: {payload.query}")
 
-        # 🔥 FIX: usar método correcto
+        # Recuperar contexto RAG
         docs = retriever.invoke(payload.query)
-
         context_text = "\n".join([d.page_content for d in docs])
+
+        # Obtener historial priorizando última interacción
         chat_context = get_chat_history(session_id)
 
         full_context = ""
@@ -231,16 +315,66 @@ async def ask(payload: Query):
         if context_text:
             full_context += f"--- CONTEXTO DEL DOCUMENTO ---\n{context_text}"
 
+
         logger.info("Contexto enviado al LLM (recortado):")
         logger.info(full_context[:1000])
 
+        # Generar respuesta
         start = time.time()
         answer = qa_chain.invoke({"context": full_context, "question": payload.query})
         end = time.time()
 
-        logger.info(f"Tiempo respuesta LLM: {round(end - start, 2)}s")
         clean_answer = answer.strip()
         logger.info(f"🟩 Respuesta FINAL: {clean_answer}")
+
+        # === Detectar síntomas y emociones ===
+        analysis = detect_symptoms_and_emotion(payload.query)
+
+        # === Guardar en BD ===
+        ensure_db_connection()
+        cursor = db_conn.cursor()
+
+        insert_sql = """
+            INSERT INTO chatbot_interactions
+            (user_id, session_id, input_text, input_metadata, response_text, 
+            response_metadata, intent, sentiment, detected_risk, detected_keywords, created_at)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
+        """
+
+        cursor.execute(insert_sql, (
+            payload.user_id,             
+            session_id,
+            payload.query,
+            json.dumps({"source": "fastapi"}),
+            clean_answer,
+            json.dumps({"model": LLM_MODEL}),
+            None,
+            json.dumps({"emotion": analysis["emotion"], "sentiment": analysis["sentiment"]}),
+            analysis["risk"],
+            json.dumps(analysis["symptoms"])
+        ))
+
+
+        # obtener ID real de la interacción insertada
+        interaction_id = cursor.lastrowid
+        if analysis["risk"]:
+            student_profile_id = None
+            if payload.user_id:
+                cursor.execute("SELECT id FROM student_profiles WHERE user_id = %s", (payload.user_id,))
+                profile = cursor.fetchone()
+                if profile:
+                    student_profile_id = profile[0] 
+            cursor.execute("""
+                INSERT INTO chatbot_alerts
+                (chatbot_interaction_id, student_profile_id, alert_type, severity)
+                VALUES (%s, %s, 'alto_estres', 'alto')
+            """, (interaction_id, student_profile_id))
+
+
+
+        db_conn.commit()
+        cursor.close()
+
         return {"answer": clean_answer}
 
     except Exception:

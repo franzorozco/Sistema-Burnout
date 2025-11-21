@@ -26,8 +26,8 @@
                             <thead>
                                 <tr>
                                     <th>No</th>
-                                    <th>Id Interacción</th>
-                                    <th>Id Perfil Estudiante</th>
+                                    <th>Interacción</th>
+                                    <th>Estudiante</th>
                                     <th>Tipo de Alerta</th>
                                     <th>Severidad</th>
                                     <th>Resuelto En</th>
@@ -40,12 +40,12 @@
                                 @foreach ($chatbotAlerts as $chatbotAlert)
                                 <tr>
                                     <td>{{ ++$i }}</td>
-                                    <td>{{ $chatbotAlert->chatbot_interaction_id }}</td>
-                                    <td>{{ $chatbotAlert->student_profile_id }}</td>
+                                    <td>{{ $chatbotAlert->chatbotInteraction ? $chatbotAlert->chatbotInteraction->session_id : 'N/A' }}</td>
+                                    <td>{{ $chatbotAlert->studentProfile ? $chatbotAlert->studentProfile->user->name : 'N/A' }}</td>
                                     <td>{{ $chatbotAlert->alert_type }}</td>
                                     <td>{{ $chatbotAlert->severity }}</td>
                                     <td>{{ $chatbotAlert->resolved_at }}</td>
-                                    <td>{{ $chatbotAlert->resolved_by }}</td>
+                                    <td>{{ $chatbotAlert->user ? $chatbotAlert->user->name : 'N/A' }}</td>
                                     <td>{{ $chatbotAlert->notes }}</td>
                                     <td>
                                         <form action="{{ route('admin.chatbot-alerts.destroy', $chatbotAlert->id) }}" method="POST">
@@ -53,13 +53,17 @@
                                             <a class="btn btn-sm btn-success" href="{{ route('admin.chatbot-alerts.edit', $chatbotAlert->id) }}">Editar</a>
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm" onclick="event.preventDefault(); confirm('¿Está seguro de eliminar?') ? this.closest('form').submit() : false;">Eliminar</button>
+                                            <button type="submit" class="btn btn-danger btn-sm" 
+                                                onclick="event.preventDefault(); confirm('¿Está seguro de eliminar?') ? this.closest('form').submit() : false;">
+                                                Eliminar
+                                            </button>
                                         </form>
                                     </td>
                                 </tr>
                                 @endforeach
                             </tbody>
                         </table>
+
                     </div>
                 </div>
             </div>

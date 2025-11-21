@@ -1,4 +1,4 @@
-<?php
+<?php 
 
 namespace App\Http\Controllers;
 
@@ -13,89 +13,92 @@ class ChatController extends Controller
 {
     public function index(Request $request)
     {
-        // Crear session_id si no existe
         if (!$request->session()->has('chat_session_id')) {
             $request->session()->put('chat_session_id', Str::uuid()->toString());
         }
-
         return view('chat');
     }
 
     public function ask(Request $request)
     {
-        // Validar input
-        $request->validate([
-            'query' => 'required|string|max:500'
-        ]);
+        try {
+            $request->validate([
+                'query' => 'required|string|max:500'
+            ]);
 
-        $query = $request->input('query');
+            $query = $request->input('query');
 
-        // Mantener la sesión del chat
-        $sessionId = $request->session()->get('chat_session_id');
-        if (!$sessionId) {
-            $sessionId = Str::uuid()->toString();
+            $sessionId = $request->session()->get('chat_session_id', Str::uuid()->toString());
             $request->session()->put('chat_session_id', $sessionId);
-        }
 
-        $userId = Auth::check() ? Auth::id() : null;
+            $userId = Auth::check() ? Auth::id() : null;
 
-        // Solo enviamos la pregunta del usuario
-        $fullQuery = $query;
+            // Llamada a FastAPI
+            try {
+                $response = Http::timeout(300)
+                    ->retry(3, 2000)
+                    ->post('http://127.0.0.1:8000/ask', [
+                        'query' => $query,
+                        'session_id' => $sessionId,
+                    ]);
 
-        try {
-            // Llamada al backend RAG
-            $response = Http::timeout(60)->post('http://127.0.0.1:8000/ask', [
-                'query' => $fullQuery,
-                'session_id' => $sessionId  // para memoria futura por sesión
-            ]);
+                $raw = $response->body();
 
-            Log::info("RAG response:", $response->json() ?? ['raw' => $response->body()]);
+                try {
+                    $data = json_decode($raw, true, 512, JSON_THROW_ON_ERROR);
+                } catch (\JsonException $e) {
+                    Log::error("JSON decode error:", ['error' => $e->getMessage(), 'raw' => $raw]);
+                    $data = ['error' => 'Invalid JSON', 'raw' => $raw];
+                }
 
-            $data = $response->json();
-            if (!is_array($data)) $data = [];
+                $answer = $data['answer'] ?? "No se recibió respuesta del RAG.";
+                $answer = mb_convert_encoding($answer, 'UTF-8', 'UTF-8');
 
-            $answer = $data['answer'] ?? 'No se recibió respuesta del servidor RAG.';
+            } catch (\Exception $e) {
+                Log::error("Error al llamar a FastAPI:", ['message' => $e->getMessage()]);
+                $answer = "Estoy procesando tu respuesta… dame unos segundos.";
+                $data = ['error' => $e->getMessage()];
+            }
+
+            // Guardar en la BD solo las columnas permitidas
+            $input_metadata = json_encode([
+                'ip' => $request->ip(),
+                'user_agent' => $request->header('User-Agent')
+            ], JSON_UNESCAPED_UNICODE);
+
+            $response_metadata = json_encode(
+                $data,
+                JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_IGNORE | JSON_PARTIAL_OUTPUT_ON_ERROR
+            ) ?: '{}';
+
+            try {
+                DB::table('chatbot_interactions')->insert([
+                    'user_id'           => $userId,
+                    'session_id'        => $sessionId,
+                    'input_text'        => $query,
+                    'input_metadata'    => $input_metadata,
+                    'response_text'     => $answer,
+                    'response_metadata' => $response_metadata,
+                    'created_at'        => now(),
+                    'updated_at'        => now(),
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Error al insertar en BD:", ['message' => $e->getMessage()]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'answer'  => $answer
+            ], 200);
 
         } catch (\Exception $e) {
-            $answer = "Error al conectar con RAG: " . $e->getMessage();
-            $data = ['error' => $e->getMessage()];
+            Log::error("Error inesperado en controlador ChatController:", ['message' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'answer'  => "Ocurrió un error inesperado.",
+                'error'   => $e->getMessage()
+            ], 200);
         }
-
-        // Guardar interacción en BD
-        try {
-            $insertData = [
-                'user_id'           => $userId,
-                'session_id'        => $sessionId,
-                'input_text'        => $query,
-                'input_metadata'    => json_encode([
-                    'ip'         => $request->ip(),
-                    'user_agent' => $request->header('User-Agent')
-                ], JSON_UNESCAPED_UNICODE) ?: '{}', // fallback si falla json_encode
-
-                'response_text'     => $answer,
-                'response_metadata' => json_encode($data, JSON_UNESCAPED_UNICODE) ?: '{}',
-
-                'intent'            => null,
-                'sentiment'         => null,
-                'detected_risk'     => false,
-                'detected_keywords' => json_encode([], JSON_UNESCAPED_UNICODE),
-
-                'created_at'        => now(),
-                'updated_at'        => now(),
-            ];
-
-            DB::table('chatbot_interactions')->insert($insertData);
-
-            Log::info("INSERT OK ✔✔✔", $insertData);
-
-        } catch (\Exception $e) {
-            Log::error("ERROR INSERTANDO EN chatbot_interactions:", [
-                'error' => $e->getMessage(),
-                'data'  => $insertData ?? []
-            ]);
-        }
-
-
-        return response()->json(['answer' => $answer]);
     }
 }
+ 

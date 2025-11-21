@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-/**
+/** 
  * Class ChatbotAlert
  *
  * @property $id

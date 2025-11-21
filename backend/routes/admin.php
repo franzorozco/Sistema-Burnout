@@ -25,9 +25,15 @@ use App\Http\Controllers\ChatbotInteractionController;
 use App\Http\Controllers\QuestionnaireChoiceController;
 use App\Http\Controllers\QuestionnaireResponseController;
 
-Route::get('/', function () {
-    return view('admin.dashboard');
-})->name('dashboard');
+use App\Http\Controllers\DashboardController;
+
+Route::get('/', [DashboardController::class, 'index'])
+    ->name('dashboard')
+    ->middleware('auth');
+
+Route::get('/admin', [DashboardController::class, 'index'])
+    ->name('admin.dashboard')
+    ->middleware('auth');
 
 // Exportar reportes (PDF) para recursos CRUD
 Route::get('users/export', [UserController::class, 'exportPdf'])->name('users.export');
