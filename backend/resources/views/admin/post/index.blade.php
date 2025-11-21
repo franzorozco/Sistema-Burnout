@@ -16,11 +16,14 @@
                                 {{ __('Publicaciones') }}
                             </span>
 
-                            <div class="float-right">
-                                <a href="{{ route('admin.posts.create') }}" class="btn btn-primary btn-sm float-right" data-placement="left">
-                                  {{ __('Crear Nuevo') }}
-                                </a>
-                            </div>
+                                                        <div class="float-right">
+                                                                <a href="{{ route('admin.posts.export', request()->query()) }}" class="btn btn-secondary btn-sm me-2" data-placement="left">
+                                                                    <i class="fa fa-file-pdf"></i> {{ __('Descargar PDF') }}
+                                                                </a>
+                                                                <a href="{{ route('admin.posts.create') }}" class="btn btn-primary btn-sm float-right" data-placement="left">
+                                                                    {{ __('Crear Nuevo') }}
+                                                                </a>
+                                                        </div>
                         </div>
                     </div>
 
@@ -35,6 +38,31 @@
                         </div>
                     @endif
                     <div class="card-body bg-white">
+                        <form method="GET" class="mb-3">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-2">
+                                    <label class="form-label">Usuario</label>
+                                    <input type="text" name="user_id" value="{{ request('user_id') }}" class="form-control" placeholder="User ID">
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label">Título</label>
+                                    <input type="text" name="title" value="{{ request('title') }}" class="form-control" placeholder="Título">
+                                </div>
+                                <div class="col-md-2">
+                                    <label class="form-label">Anónimo</label>
+                                    <select name="is_anonymous" class="form-select">
+                                        <option value="">Todos</option>
+                                        <option value="1" {{ request('is_anonymous') === '1' ? 'selected' : '' }}>Sí</option>
+                                        <option value="0" {{ request('is_anonymous') === '0' ? 'selected' : '' }}>No</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                                    <a href="{{ route('admin.posts.index') }}" class="btn btn-secondary">Limpiar</a>
+                                    <a href="{{ route('admin.posts.export', request()->query()) }}" class="btn btn-outline-danger ms-auto">Descargar PDF</a>
+                                </div>
+                            </div>
+                        </form>
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead class="thead">

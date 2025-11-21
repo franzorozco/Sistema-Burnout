@@ -16,11 +16,14 @@
                                 {{ __('Roles') }}
                             </span>
 
-                             <div class="float-right">
-                                <a href="{{ route('admin.roles.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
-                                  {{ __('Crear Nuevo') }}
-                                </a>
-                              </div>
+                                                         <div class="float-right">
+                                                                <a href="{{ route('admin.roles.export', request()->query()) }}" class="btn btn-secondary btn-sm me-2" data-placement="left">
+                                                                    <i class="fa fa-file-pdf"></i> {{ __('Descargar PDF') }}
+                                                                </a>
+                                                                <a href="{{ route('admin.roles.create') }}" class="btn btn-primary btn-sm float-right"  data-placement="left">
+                                                                    {{ __('Crear Nuevo') }}
+                                                                </a>
+                                                            </div>
                         </div>
                     </div>
                     @if ($message = Session::get('success'))
@@ -30,6 +33,27 @@
                     @endif
 
                     <div class="card-body bg-white">
+                        <form method="GET" class="mb-3">
+                            <div class="row g-2 align-items-end">
+                                <div class="col-md-4">
+                                    <label class="form-label">Nombre</label>
+                                    <input type="text" name="name" value="{{ request('name') }}" class="form-control" placeholder="Nombre">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Guardia</label>
+                                    <input type="text" name="guard_name" value="{{ request('guard_name') }}" class="form-control" placeholder="Guard">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">Creado por</label>
+                                    <input type="text" name="created_by" value="{{ request('created_by') }}" class="form-control" placeholder="Usuario">
+                                </div>
+                                <div class="col-md-2 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                                    <a href="{{ route('admin.roles.index') }}" class="btn btn-secondary">Limpiar</a>
+                                    <a href="{{ route('admin.roles.export', request()->query()) }}" class="btn btn-outline-danger ms-auto">Descargar PDF</a>
+                                </div>
+                            </div>
+                        </form>
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead class="thead">

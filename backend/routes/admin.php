@@ -29,6 +29,13 @@ Route::get('/', function () {
     return view('admin.dashboard');
 })->name('dashboard');
 
+// Exportar reportes (PDF) para recursos CRUD
+Route::get('users/export', [UserController::class, 'exportPdf'])->name('users.export');
+Route::get('professionals/export', [ProfessionalController::class, 'exportPdf'])->name('professionals.export');
+Route::get('roles/export', [RoleController::class, 'exportPdf'])->name('roles.export');
+Route::get('permissions/export', [PermissionController::class, 'exportPdf'])->name('permissions.export');
+Route::get('posts/export', [PostController::class, 'exportPdf'])->name('posts.export');
+
 Route::resource('users', UserController::class);
 Route::resource('users', UserController::class);
 Route::resource('permissions', PermissionController::class);

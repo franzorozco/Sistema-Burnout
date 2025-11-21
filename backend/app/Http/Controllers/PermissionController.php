@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\PermissionRequest;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class PermissionController extends Controller
 {
@@ -16,7 +17,7 @@ class PermissionController extends Controller
      */
     public function index(Request $request): View
     {
-        $permissions = Permission::paginate();
+        $permissions = $this->buildQuery($request)->paginate(15);
 
         return view('admin.permission.index', compact('permissions'))
             ->with('i', ($request->input('page', 1) - 1) * $permissions->perPage());
@@ -80,5 +81,29 @@ class PermissionController extends Controller
 
         return Redirect::route('admin.permissions.index')
             ->with('success', 'Permission deleted successfully');
+    }
+
+    protected function buildQuery(Request $request)
+    {
+        $query = Permission::query();
+
+        if ($request->filled('name')) {
+            $query->where('name', 'like', '%'.$request->name.'%');
+        }
+        if ($request->filled('guard_name')) {
+            $query->where('guard_name', 'like', '%'.$request->guard_name.'%');
+        }
+
+        return $query->orderByDesc('id');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $permissions = $this->buildQuery($request)->get();
+        $filters = $request->only(['name','guard_name']);
+
+        $pdf = Pdf::loadView('admin.permission.pdf', compact('permissions', 'filters'));
+
+        return $pdf->download('permissions_report_'.now()->format('Ymd_His').'.pdf');
     }
 }

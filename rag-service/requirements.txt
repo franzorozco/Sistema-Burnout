@@ -5,3 +5,12 @@ langchain-ollama
 chromadb
 python-dotenv
 pypdf
+pydantic
+mysql-connector-python
+pytesseract
+Pillow
+pymupdf
+langchain-core
+langchain-text-splitters
+langchain_ollama
+langchain_chroma
