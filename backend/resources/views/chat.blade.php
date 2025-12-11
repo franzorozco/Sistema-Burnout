@@ -182,7 +182,7 @@
     .chat-input button:hover {
         background: #3c8b40;
     }
-</style>
+</style> 
 </head>
 <body>
 

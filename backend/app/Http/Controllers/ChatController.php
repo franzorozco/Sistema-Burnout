@@ -42,7 +42,7 @@ class ChatController extends Controller
             try {
                 $response = Http::timeout(300)
                     ->retry(3, 2000)
-                    ->post('http://127.0.0.1:8000/ask', [
+                    ->post('https://e39feec26ff1.ngrok-free.app/ask', [
                         'query' => $query,
                         'session_id' => $sessionId,
                         'user_id' => $userId // opcional si quieres usarlo
