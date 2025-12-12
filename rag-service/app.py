@@ -14,9 +14,6 @@ from langchain_chroma import Chroma
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
-
-
-
 # FastAPI
 from fastapi.responses import JSONResponse
 
@@ -49,7 +46,7 @@ os.environ["TESSDATA_PREFIX"] = r"C:\Program Files\Tesseract-OCR\tessdata"
 # ENV
 # ======================================================
 load_dotenv()
-LLM_URL = os.getenv("LLM_URL", "http://localhost:11434")  # Ollama local
+LLM_URL = os.getenv("LLM_URL", "http://localhost:11434")
 LLM_MODEL = os.getenv("LLM_MODEL", "llama3.2")
 EMBED_MODEL = os.getenv("EMBED_MODEL", "nomic-embed-text")
 DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
@@ -63,11 +60,11 @@ PERSIST_DIR.mkdir(exist_ok=True)
 app = FastAPI(title="RAG Service (Ollama + LangChain + Chroma)")
 
 # ======================================================
-# CORS para poder llamar desde Laravel remoto
+# CORS
 # ======================================================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # en producción poner solo la URL de Laravel
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -80,84 +77,74 @@ llm = OllamaLLM(model=LLM_MODEL, base_url=LLM_URL)
 embeddings = OllamaEmbeddings(model=EMBED_MODEL, base_url=LLM_URL)
 
 # ======================================================
-# PROMPT PRINCIPAL
+# PROMPT PRINCIPAL (RESPUESTA DEL CHAT)
 # ======================================================
 prompt = PromptTemplate(
     input_variables=["context", "question"],
     template="""
-Eres **Laiso**, un asistente psicológico especializado en prevención del burnout. 
-Tu estilo es cálido, empático, breve y natural. Hablas como en un chat real, 
-NO como una clase, NO repites saludos, NO das definiciones largas, 
-NO repites información que ya está en el historial.
+Eres **Laiso**, un asistente psicológico especializado en prevención del burnout.
+Tu estilo es cálido, empático y breve. Hablas natural, como un chat humano.
 
-### REGLAS DE COMUNICACIÓN:
-- No saludes si el usuario ya saludó antes.
-- No te despidas si el usuario no se despide.
-- Responde siempre de forma breve (3–20 líneas máximo).
-- No respondas con nombres que estén en el documento, solo usa el nombre que el usuario te da.
-- Mantén coherencia emocional con lo dicho anteriormente.
-- Prioriza escuchar, validar emociones y avanzar la conversación.
-- Haz preguntas cortas que ayuden a comprender mejor al usuario.
-- No repitas información del contexto, solo úsala para entenderlo.
-- Usa un tono humano, empático y sencillo.
+### REGLAS:
+- No saludes si ya hubo saludo.
+- No te despidas si no se despiden.
+- No repitas el historial ni el contexto.
+- Responde entre 3 y 20 líneas.
+- Mantén tono empático, simple y humano.
 
-### CONTEXTO DEL CHAT (para que entiendas el estado emocional, no lo repitas):
+### CONTEXTO PARA ENTENDER (NO LO REPITAS):
 {context}
 
-### MENSAJE DEL USUARIO:
+### MENSAJE:
 {question}
 
-### RESPUESTA DE LAISO (concisa, empática y natural):
+### RESPUESTA DE LAISO:
 """
 )
 qa_chain = prompt | llm | StrOutputParser()
 
 # ======================================================
-# DETECCIÓN DE SÍNTOMAS Y EMOCIONES
+# PROMPT DE ANÁLISIS EMOCIONAL Y DE RIESGO
 # ======================================================
-RISK_KEYWORDS = ["no puedo más", "no doy más", "agotado", "agotamiento",
-                 "estresado", "estres", "cansado", "fatigado",
-                 "ansioso", "ansiedad", "desesperado"]
+analysis_prompt = PromptTemplate(
+    input_variables=["text"],
+    template="""
+Eres un analizador clínico automático. Recibirás un mensaje de un usuario y debes clasificarlo.
+Responde SOLO en JSON válido.
 
-SYMPTOMS_MAP = {
-    "estres": ["estres", "estresado", "estresante"],
-    "agotamiento": ["agotado", "cansado", "fatigado"],
-    "ansiedad": ["ansioso", "ansiedad"],
-    "tristeza": ["triste", "bajoneado"],
-    "frustracion": ["frustrado", "molesto"],
-    "problemas_sueno": ["insomnio", "no puedo dormir", "duermo mal"],
-    "dolor_cabeza": ["dolor de cabeza", "migraña"],
-    "desmotivacion": ["desmotivado", "sin ganas", "pérdida de interés"]
-}
+Analiza el mensaje:
+"{text}"
 
+Devuelve un JSON con:
 
-def detect_symptoms_and_emotion(text: str):
-    text_lower = text.lower()
-    detected_symptoms = []
-    risk_flag = False
+- "emotion": ["neutral", "tristeza", "ansiedad", "estres", "frustracion", "ira", "miedo", "desesperacion"]
+- "sentiment": ["positivo", "neutral", "negativo"]
+- "symptoms": lista de síntomas detectados (texto libre)
+- "risk_level": ["sin_riesgo", "riesgo_leve", "riesgo_moderado", "riesgo_alto", "riesgo_extremo"]
+- "should_alert": true o false
+- "summary": explicación breve del estado emocional
 
-    for symptom, keywords in SYMPTOMS_MAP.items():
-        if any(kw in text_lower for kw in keywords):
-            detected_symptoms.append(symptom)
+REGLAS:
+- Mencionar suicidio, autolesiones, "me quiero matar", "no quiero vivir", implica riesgo_alto o riesgo_extremo.
+- Ansiedad fuerte, pánico, colapso → riesgo_moderado.
+- SOLO JSON. Sin texto adicional.
+"""
+)
+analysis_chain = analysis_prompt | llm | StrOutputParser()
 
-    if any(kw in text_lower for kw in RISK_KEYWORDS):
-        risk_flag = True
-
-    emotion = "neutral"
-    if any(x in text_lower for x in ["triste", "solo", "mal"]):
-        emotion = "tristeza"
-    if any(x in text_lower for x in ["estres", "presion"]):
-        emotion = "estres"
-    if any(x in text_lower for x in ["ansioso"]):
-        emotion = "ansiedad"
-
-    sentiment = "neutral"
-    if any(x in text_lower for x in ["bien", "contento", "tranquilo"]):
-        sentiment = "positivo"
-    elif any(x in text_lower for x in ["mal", "triste", "estres", "agotado"]):
-        sentiment = "negativo"
-
-    return {"emotion": emotion, "sentiment": sentiment, "symptoms": detected_symptoms, "risk": risk_flag}
+def analyze_with_model(text: str):
+    raw = analysis_chain.invoke({"text": text})
+    try:
+        return json.loads(raw)
+    except:
+        return {
+            "emotion": "neutral",
+            "sentiment": "neutral",
+            "symptoms": [],
+            "risk_level": "sin_riesgo",
+            "should_alert": False,
+            "summary": "No se pudo analizar correctamente"
+        }
 
 # ======================================================
 # MYSQL
@@ -198,18 +185,26 @@ def get_chat_history(session_id: str, max_chars: int = 3000):
     """, (session_id,))
     rows = cursor.fetchall()
     cursor.close()
+
     if not rows:
         return ""
+
     history = []
     total_chars = 0
+
     for row in rows[:-1]:
         line = f"U: {row['input_text']}\nA: {row['response_text'][:200]}"
         total_chars += len(line)
         if total_chars > max_chars:
             break
         history.append(line)
+
     last_row = rows[-1]
-    last_line = f"Última interacción del usuario:\nU: {last_row['input_text']}\nA: {last_row['response_text'][:200]}"
+    last_line = (
+        f"Última interacción:\n"
+        f"U: {last_row['input_text']}\n"
+        f"A: {last_row['response_text'][:200]}"
+    )
     history.append(last_line)
     return "\n".join(history)
 
@@ -219,12 +214,10 @@ def get_chat_history(session_id: str, max_chars: int = 3000):
 db = None
 retriever = None
 
-
 def load_chroma():
     global db, retriever
     db = Chroma(embedding_function=embeddings, persist_directory=str(PERSIST_DIR))
     retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": 3})
-
 
 if any(PERSIST_DIR.iterdir()):
     load_chroma()
@@ -247,13 +240,11 @@ async def ingest(file: UploadFile = File(...)):
         content = await file.read()
         docs = []
 
-        # TXT
         if file.filename.lower().endswith(".txt"):
             text = content.decode("utf-8").strip()
             if text:
                 docs.append(Document(page_content=text))
 
-        # PDF
         elif file.filename.lower().endswith(".pdf"):
             pdf = fitz.open(stream=content, filetype="pdf")
             for page in pdf:
@@ -275,7 +266,11 @@ async def ingest(file: UploadFile = File(...)):
         chunks = splitter.split_documents(docs)
 
         global db, retriever
-        db = Chroma.from_documents(documents=chunks, embedding_function=embeddings, persist_directory=str(PERSIST_DIR))
+        db = Chroma.from_documents(
+            documents=chunks,
+            embedding_function=embeddings,
+            persist_directory=str(PERSIST_DIR)
+        )
         db.persist()
         retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
@@ -302,8 +297,9 @@ async def ask(payload: Query):
         docs = retriever.invoke(payload.query)
         context_text = "\n".join([d.page_content for d in docs])
 
-        # Obtener historial
+        # Historial
         chat_context = get_chat_history(session_id)
+
         full_context = ""
         if chat_context:
             full_context += f"--- HISTORIAL DEL CHAT ---\n{chat_context}\n\n"
@@ -313,26 +309,24 @@ async def ask(payload: Query):
         logger.info("Contexto enviado al LLM (resumido):")
         logger.info(full_context[:500])
 
-        # Generar respuesta
-        start = time.time()
+        # Respuesta del chat
         answer = qa_chain.invoke({"context": full_context, "question": payload.query})
-        end = time.time()
-
         clean_answer = answer.strip()
-        logger.info(f"Respuesta FINAL: {clean_answer}")
 
-        # Detectar síntomas
-        analysis = detect_symptoms_and_emotion(payload.query)
+        # Análisis emocional completo con el LLM
+        analysis = analyze_with_model(payload.query)
 
-        # Guardar en BD
+        # Guardar BD
         ensure_db_connection()
         cursor = db_conn.cursor()
+
         insert_sql = """
             INSERT INTO chatbot_interactions
             (user_id, session_id, input_text, input_metadata, response_text, 
             response_metadata, intent, sentiment, detected_risk, detected_keywords, created_at)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, NOW())
         """
+
         cursor.execute(insert_sql, (
             payload.user_id,
             session_id,
@@ -341,27 +335,40 @@ async def ask(payload: Query):
             clean_answer,
             json.dumps({"model": LLM_MODEL}),
             None,
-            json.dumps({"emotion": analysis["emotion"], "sentiment": analysis["sentiment"]}),
-            analysis["risk"],
+            json.dumps({
+                "emotion": analysis["emotion"],
+                "sentiment": analysis["sentiment"],
+                "risk_level": analysis["risk_level"],
+                "summary": analysis["summary"]
+            }),
+            analysis["should_alert"],
             json.dumps(analysis["symptoms"])
         ))
 
         interaction_id = cursor.lastrowid
-        if analysis["risk"]:
+
+        if analysis["should_alert"]:
             student_profile_id = None
             if payload.user_id:
                 cursor.execute("SELECT id FROM student_profiles WHERE user_id = %s", (payload.user_id,))
                 profile = cursor.fetchone()
                 if profile:
                     student_profile_id = profile[0]
+
             cursor.execute("""
                 INSERT INTO chatbot_alerts
                 (chatbot_interaction_id, student_profile_id, alert_type, severity)
-                VALUES (%s, %s, 'alto_estres', 'alto')
-            """, (interaction_id, student_profile_id))
+                VALUES (%s, %s, 'riesgo_emocional', %s)
+            """, (
+                interaction_id,
+                student_profile_id,
+                analysis["risk_level"][0] if isinstance(analysis["risk_level"], list) else analysis["risk_level"]
+
+            ))
 
         db_conn.commit()
         cursor.close()
+
         return {"answer": clean_answer}
 
     except Exception:

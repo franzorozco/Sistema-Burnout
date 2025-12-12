@@ -73,7 +73,66 @@
         }
     }
 
-    /* ------------------------------------------- */
+
+    /* Panel lateral de chats */
+    .sidebar {
+        width: 280px;
+        background: #f9f9f9;
+        border-right: 1px solid #e5e5e5;
+        padding: 20px;
+        overflow-y: auto;
+        height: calc(100vh - 70px);
+        position: fixed;
+        top: 70px;
+        left: 0;
+    }
+
+    .sidebar h3 {
+        font-size: 16px;
+        margin-bottom: 12px;
+        color: #2e7d32;
+    }
+
+    .chat-item {
+        padding: 10px 12px;
+        margin-bottom: 8px;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 1px solid #ddd;
+        transition: 0.2s;
+    }
+
+    .chat-item:hover {
+        background: #e8f5e9;
+        border-color: #4caf50;
+    }
+
+    .chat-item.active {
+        background: #4caf50;
+        color: white;
+    }
+
+    /* Botón Nueva Conversación más estilizado */
+    #newChatBtn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 12px;
+        background: #4caf50;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    #newChatBtn:hover {
+        background: #3c8b40;
+    }
+
+    /* Ajustar chat-container cuando hay sidebar */
+    .chat-container {
+        margin-left: 300px;
+    }
 
     /* WRAPPER DEL CHAT (AJUSTADO POR NAVBAR) */
     .chat-container {
@@ -185,8 +244,7 @@
 </style> 
 </head>
 <body>
-
-<!-- ================== NAVBAR ================== -->
+<!-- NAVBAR -->
 <nav>
     <div class="logo">Burnout IA</div>
     <ul>
@@ -196,8 +254,18 @@
         <li><a href="#">Contacto</a></li>
     </ul>
 </nav>
-<!-- ============================================ -->
 
+<!-- SIDEBAR solo si el usuario está logueado -->
+@if(Auth::check())
+<div class="sidebar">
+    <h3>Chats anteriores</h3>
+    <button id="newChatBtn">Nueva Conversación</button>
+    <div id="chatList" style="margin-top:15px;">
+    </div>
+</div>
+@endif
+
+<!-- CONTENEDOR DEL CHAT -->
 <div class="chat-container">
     <div class="chat-messages" id="chatMessages"></div>
 
@@ -208,23 +276,23 @@
 </div>
 
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
     const chatMessages = document.getElementById('chatMessages');
     const sendBtn = document.getElementById('sendBtn');
     const queryInput = document.getElementById('query');
+    const newChatBtn = document.getElementById('newChatBtn');
+    const chatList = document.getElementById('chatList');
 
+    let currentChatId = null;
+
+    // Funciones de mensajes
     function addMessage(text, sender) {
-        const normalized = text
-            .replace(/\*\*/g, '')
-            .replace(/\*/g, '')
-            .replace(/\n/g, '<br>');
-
+        const normalized = text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/\n/g, '<br>');
         const msg = document.createElement('div');
         msg.classList.add('message', sender);
-
         const bubble = document.createElement('div');
         bubble.classList.add('bubble');
         bubble.innerHTML = normalized;
-
         msg.appendChild(bubble);
         chatMessages.appendChild(msg);
         chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -266,23 +334,23 @@
             const raw = await response.text();
             let data;
 
-            try {
-                data = JSON.parse(raw);
-            } catch {
+            try { data = JSON.parse(raw); } 
+            catch {
                 removeTyping();
-                addMessage("⚠️ Error: el servidor devolvió HTML.", "bot");
+                addMessage("Error: el servidor devolvió HTML.", "bot");
                 return;
             }
 
             removeTyping();
-            addMessage(data.answer || "⚠️ Respuesta inválida del servidor.", "bot");
+            addMessage(data.answer || "Respuesta inválida del servidor.", "bot");
 
         } catch (error) {
             removeTyping();
-            addMessage("⚠️ Error al conectar con el servidor.", "bot");
+            addMessage("Error al conectar con el servidor.", "bot");
         }
     }
 
+    // Enviar con Enter o botón
     sendBtn.addEventListener("click", sendQuery);
     queryInput.addEventListener("keypress", e => {
         if (e.key === "Enter") {
@@ -290,7 +358,83 @@
             sendQuery();
         }
     });
-</script>
 
-</body>
-</html>
+    newChatBtn?.addEventListener('click', async () => {
+        try {
+            const resp = await fetch("{{ url('/chat/new') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                }
+            });
+            const data = await resp.json();
+
+            chatMessages.innerHTML = '';
+            addMessage("Se inició una nueva conversación.", "bot");
+            currentChatId = data.session_id;
+
+            document.querySelectorAll('.chat-item').forEach(c => c.classList.remove('active'));
+
+            const div = document.createElement('div');
+            div.classList.add('chat-item', 'active');
+            div.textContent = data.session_id.slice(0,8);
+            div.dataset.sessionId = data.session_id;
+            div.addEventListener('click', () => loadChat(data.session_id, div));
+
+            chatList.prepend(div);
+
+        } catch {
+            addMessage("No se pudo iniciar una nueva conversación.", "bot");
+        }
+    });
+
+
+    // Cargar chats del usuario
+    async function loadChats() {
+        if (!chatList) return;
+
+        const resp = await fetch("{{ url('/chat/list') }}");
+        const data = await resp.json();
+        chatList.innerHTML = '';
+
+        if(data.chats.length === 0) return;
+
+        data.chats.forEach((chat, index) => {
+            const div = document.createElement('div');
+            div.classList.add('chat-item');
+            div.textContent = chat.session_id.slice(0, 8);
+            div.dataset.sessionId = chat.session_id;
+
+            div.addEventListener('click', () => loadChat(chat.session_id, div));
+
+            chatList.appendChild(div);
+            if (index === 0) {
+                div.classList.add('active');
+                loadChat(chat.session_id, div);
+            }
+        });
+    }
+
+
+
+
+    // Cargar conversación por session_id
+    async function loadChat(sessionId, element) {
+        currentChatId = sessionId;
+
+        document.querySelectorAll('.chat-item').forEach(c => c.classList.remove('active'));
+        element.classList.add('active');
+
+        const resp = await fetch(`{{ url('/chat/load') }}/${sessionId}`);
+        const data = await resp.json();
+
+        chatMessages.innerHTML = '';
+        data.messages.forEach(msg => addMessage(msg.text, msg.sender));
+    }
+
+
+        loadChats();
+    });
+
+</script>
