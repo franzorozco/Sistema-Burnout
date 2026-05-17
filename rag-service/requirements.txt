@@ -14,3 +14,4 @@ langchain-core
 langchain-text-splitters
 langchain_ollama
 langchain_chroma
+python-multipart

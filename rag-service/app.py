@@ -40,7 +40,7 @@ logger = logging.getLogger("uvicorn")
 # TESSERACT
 # ======================================================
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-os.environ["TESSDATA_PREFIX"] = r"C:\Program Files\Tesseract-OCR\tessdata"
+os.environ["TESSDATA_PREFIX"] = r"C:\TrabajosU\Sistema-Burnout\rag-service\tessdata"
 
 # ======================================================
 # ENV
@@ -262,24 +262,24 @@ async def ingest(file: UploadFile = File(...)):
         if not docs:
             raise HTTPException(400, "El archivo no contiene texto usable.")
 
-        splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+        from langchain_text_splitters import RecursiveCharacterTextSplitter
+        splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
         chunks = splitter.split_documents(docs)
 
         global db, retriever
         db = Chroma.from_documents(
             documents=chunks,
-            embedding_function=embeddings,
+            embedding=embeddings,
             persist_directory=str(PERSIST_DIR)
         )
-        db.persist()
         retriever = db.as_retriever(search_type="similarity", search_kwargs={"k": 3})
 
         logger.info("Retriever reconstruido correctamente.")
         return {"status": "ok", "chunks_indexed": len(chunks)}
 
-    except Exception:
+    except Exception as e:
         traceback.print_exc()
-        raise HTTPException(500, "Error procesando el archivo.")
+        raise HTTPException(500, f"Error procesando el archivo: {str(e)}")
 
 # ======================================================
 # ENDPOINT ASK
