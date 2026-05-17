@@ -18,6 +18,7 @@ onMounted(() => {
 });
 
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 // Simple handler: navigate to backend login page so user can authenticate
 async function handleLogin() {
@@ -28,7 +29,12 @@ async function handleLogin() {
     const password = passwordEl ? passwordEl.value : '';
 
     if (!email || !password) {
-      alert("Por favor, ingresa tu correo y contraseña.");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campos vacíos',
+        text: 'Por favor, ingresa tu correo y contraseña.',
+        confirmButtonColor: '#4CAF50'
+      });
       return;
     }
 
@@ -42,13 +48,25 @@ async function handleLogin() {
     localStorage.setItem('user', JSON.stringify(res.data.user));
     localStorage.setItem('role', res.data.role);
 
-    alert("¡Bienvenido, " + res.data.user.name + "!");
-    window.location.href = '/'; // Redirigir al inicio o dashboard
+    Swal.fire({
+      icon: 'success',
+      title: '¡Bienvenido!',
+      text: 'Hola ' + res.data.user.name + ', has iniciado sesión correctamente.',
+      showConfirmButton: false,
+      timer: 1500
+    }).then(() => {
+      window.location.href = '/'; // Redirigir al inicio o dashboard
+    });
     
   } catch (err) {
     console.error(err);
     const msg = err.response?.data?.message || err.message;
-    alert('Error al iniciar sesión: ' + msg);
+    Swal.fire({
+      icon: 'error',
+      title: 'Error de Autenticación',
+      text: msg,
+      confirmButtonColor: '#F44336'
+    });
   }
 }
 </script>

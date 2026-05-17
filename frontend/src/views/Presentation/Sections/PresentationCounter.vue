@@ -36,6 +36,7 @@ import DefaultCounterCard from "../../../examples/cards/counterCards/DefaultCoun
                 icon="dashboard"
                 title="Conoce nuestra Plataforma"
                 description="Esta plataforma está diseñada para ser fácil de usar y accesible desde cualquier dispositivo, brindándote la ayuda que necesitas en cualquier momento y lugar."
+                :count="1"
               />
             </div>
           </div>
