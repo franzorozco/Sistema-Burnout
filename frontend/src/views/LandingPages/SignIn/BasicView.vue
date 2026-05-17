@@ -17,52 +17,38 @@ onMounted(() => {
   setMaterialInput();
 });
 
+import axios from 'axios';
+
 // Simple handler: navigate to backend login page so user can authenticate
 async function handleLogin() {
   try {
-    // 1) Initialize CSRF cookie for Laravel Sanctum
-    await fetch('/sanctum/csrf-cookie', { credentials: 'include' });
-
-    // 2) Read input values (MaterialInput doesn't expose v-model here)
     const emailEl = document.getElementById('email');
     const passwordEl = document.getElementById('password');
-    const rememberEl = document.getElementById('rememberMe');
     const email = emailEl ? emailEl.value : '';
     const password = passwordEl ? passwordEl.value : '';
-    const remember = rememberEl ? rememberEl.checked : false;
 
-    // 3) Read XSRF cookie and include as header
-    function getCookie(name) {
-      const v = document.cookie.match('(?:^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
-      return v ? decodeURIComponent(v[1]) : null;
-    }
-    const xsrf = getCookie('XSRF-TOKEN');
-
-    // 4) Send login request to proxied /login endpoint with credentials
-    const res = await fetch('/login', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-XSRF-TOKEN': xsrf || '',
-        Accept: 'application/json',
-      },
-      body: JSON.stringify({ email, password, remember }),
-    });
-
-    if (res.ok) {
-      // On success, redirect to admin dashboard on frontend origin (proxy will forward)
-      window.location.href = '/admin';
+    if (!email || !password) {
+      alert("Por favor, ingresa tu correo y contraseña.");
       return;
     }
 
-    // handle errors
-    const data = await res.json().catch(() => ({}));
-    const msg = data.message || 'Login failed';
-    alert(msg);
+    const res = await axios.post('http://127.0.0.1:8000/api/login', {
+      email,
+      password
+    });
+
+    // Guardar sesión en el navegador
+    localStorage.setItem('token', res.data.access_token);
+    localStorage.setItem('user', JSON.stringify(res.data.user));
+    localStorage.setItem('role', res.data.role);
+
+    alert("¡Bienvenido, " + res.data.user.name + "!");
+    window.location.href = '/'; // Redirigir al inicio o dashboard
+    
   } catch (err) {
     console.error(err);
-    alert('Error en el login: ' + (err.message || err));
+    const msg = err.response?.data?.message || err.message;
+    alert('Error al iniciar sesión: ' + msg);
   }
 }
 </script>

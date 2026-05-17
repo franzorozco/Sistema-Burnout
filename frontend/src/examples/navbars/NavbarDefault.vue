@@ -136,11 +136,11 @@ watch(
       >
         Bunout
       </RouterLink>
-      <a
-        href="http://127.0.0.1:8081/login"
+      <RouterLink
+        :to="{ name: 'signin-basic' }"
         class="btn btn-sm bg-gradient-success mb-0 ms-auto d-lg-none d-block"
-        >Iniciar Sesión</a
-      > <!-- Corregido para móvil -->
+        >Iniciar Sesión</RouterLink
+      >
       <button
         class="navbar-toggler shadow-none ms-2"
         type="button"
@@ -185,11 +185,11 @@ watch(
         </ul>
         <ul class="navbar-nav d-lg-block d-none">
           <li class="nav-item">
-            <a
-              href="http://127.0.0.1:8081/login"
+            <RouterLink
+              :to="{ name: 'signin-basic' }"
               class="btn btn-sm btn-round mb-0 me-1 bg-gradient-success"
-              >Iniciar Sesión</a
-            > <!-- Corregido para escritorio -->
+              >Iniciar Sesión</RouterLink
+            >
           </li>
         </ul>
       </div>
