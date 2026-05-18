@@ -5,17 +5,25 @@
       class="chat-btn" 
       @click="toggleChat" 
       :class="{ 'is-active': isOpen }"
+      style="padding: 0; overflow: visible; background: transparent; border: none; box-shadow: none; position: relative;"
     >
-      <i class="fas fa-comment-dots" v-if="!isOpen"></i>
-      <i class="fas fa-times" v-else></i>
+      <!-- Burbuja de Saludo Flotante -->
+      <div v-if="!isOpen && showGreeting" class="mascot-greeting fade-in-out">
+        {{ currentGreeting }}
+      </div>
+      
+      <img v-if="!isOpen" src="/laiso_robot_final.png" style="width: 140px; height: 140px; object-fit: contain; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.3)); animation: greetMascot 4s ease-in-out infinite; transform-origin: bottom center;">
+      <div v-else style="width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(135deg, #00BCD4 0%, #2196F3 50%, #9C27B0 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);">
+        <i class="fas fa-times" style="color: white; font-size: 26px;"></i>
+      </div>
     </button>
 
     <!-- Ventana del Chat -->
     <div class="chat-window" v-if="isOpen">
       <div class="chat-header">
         <div class="d-flex align-items-center" style="display:flex; align-items:center;">
-          <div class="avatar-bot me-2" style="margin-right: 10px;">
-            <i class="fas fa-robot"></i>
+          <div class="avatar-bot me-2 bg-transparent" style="margin-right: 10px; width: 55px; height: 55px;">
+            <img src="/laiso_logo.png" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
           </div>
           <div>
             <h6 class="mb-0 text-white" style="margin: 0; color: white;">Laiso</h6>
@@ -60,7 +68,7 @@
 </template>
 
 <script setup>
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, onMounted, onUnmounted } from 'vue';
 import axios from 'axios';
 
 const isOpen = ref(false);
@@ -70,6 +78,32 @@ const messages = ref([
 ]);
 const isLoading = ref(false);
 const chatBody = ref(null);
+
+const greetings = [
+  "¡Hola! ¿Necesitas ayuda? 👋",
+  "Estoy aquí para escucharte 😊",
+  "¿Cómo te sientes hoy? 💙",
+  "Hablemos sobre tu bienestar 🧘"
+];
+const currentGreeting = ref(greetings[0]);
+const showGreeting = ref(true);
+let greetingInterval;
+
+onMounted(() => {
+  let index = 0;
+  greetingInterval = setInterval(() => {
+    showGreeting.value = false;
+    setTimeout(() => {
+      index = (index + 1) % greetings.length;
+      currentGreeting.value = greetings[index];
+      showGreeting.value = true;
+    }, 500); // Pequeña pausa antes de mostrar el nuevo mensaje
+  }, 6000); // Cambiar cada 6 segundos
+});
+
+onUnmounted(() => {
+  clearInterval(greetingInterval);
+});
 
 const toggleChat = () => {
   isOpen.value = !isOpen.value;
@@ -125,19 +159,14 @@ const sendMessage = async () => {
 }
 
 .chat-btn {
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  color: white;
-  border: none;
-  box-shadow: 0 10px 25px rgba(124, 58, 237, 0.4);
-  font-size: 26px;
+  width: auto;
+  height: auto;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   display: flex;
   align-items: center;
   justify-content: center;
+  outline: none;
 }
 
 .chat-btn:hover {
@@ -314,6 +343,51 @@ const sendMessage = async () => {
 @keyframes bounce {
   0%, 80%, 100% { transform: scale(0); opacity: 0.5; }
   40% { transform: scale(1); opacity: 1; }
+}
+
+/* Animación de Mascota Saludando */
+@keyframes greetMascot {
+  0% { transform: translateY(0px) rotate(0deg); }
+  20% { transform: translateY(-12px) rotate(-10deg); }
+  40% { transform: translateY(-8px) rotate(12deg); }
+  60% { transform: translateY(-12px) rotate(-8deg); }
+  80% { transform: translateY(-4px) rotate(5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+/* Burbuja de saludo flotante */
+.mascot-greeting {
+  position: absolute;
+  top: -45px;
+  right: 50px;
+  background: white;
+  padding: 8px 15px;
+  border-radius: 15px;
+  border-bottom-right-radius: 0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  font-size: 13px;
+  color: #334155;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  animation: floatMascot 3.5s ease-in-out infinite;
+}
+
+@keyframes floatMascot {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+}
+
+.fade-in-out {
+  animation: fadeInOut 5.5s infinite;
+}
+
+@keyframes fadeInOut {
+  0% { opacity: 0; transform: translateY(10px); }
+  10% { opacity: 1; transform: translateY(0); }
+  90% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-10px); }
 }
 
 /* Scrollbar personalizada */

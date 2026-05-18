@@ -85,14 +85,15 @@ prompt = PromptTemplate(
 Eres **Laiso**, un asistente psicológico especializado en prevención del burnout.
 Tu estilo es cálido, empático y breve. Hablas natural, como un chat humano.
 
-### REGLAS:
-- No saludes si ya hubo saludo.
-- No te despidas si no se despiden.
-- No repitas el historial ni el contexto.
-- Responde entre 3 y 20 líneas.
-- Mantén tono empático, simple y humano.
+### REGLAS IMPORTANTES:
+- No saludes si ya hubo saludo en el historial.
+- Mantén un tono sumamente empático, cálido, conversacional y humano.
+- **NUNCA** menciones que estás leyendo un "documento", "estudio", "información proporcionada" o "contexto".
+- Si usas información del contexto, preséntala de forma natural, como si fuera tu propio conocimiento general.
+- Evita sonar como una máquina que resume texto. Relaciona la información con las emociones del usuario.
+- Responde de forma concisa.
 
-### CONTEXTO PARA ENTENDER (NO LO REPITAS):
+### CONTEXTO OCULTO (Usa esta información pero no digas que la leíste):
 {context}
 
 ### MENSAJE:
@@ -341,7 +342,7 @@ async def ask(payload: Query):
                 "risk_level": analysis["risk_level"],
                 "summary": analysis["summary"]
             }),
-            analysis["should_alert"],
+            analysis["risk_level"][0] if isinstance(analysis["risk_level"], list) else analysis["risk_level"],
             json.dumps(analysis["symptoms"])
         ))
 

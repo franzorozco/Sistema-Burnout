@@ -29,6 +29,12 @@ import TestRapidoView from "../views/LandingPages/TestRapido/TestRapidoView.vue"
 import DashboardView from "../views/Admin/DashboardView.vue";
 import AdminLayout from "../layouts/AdminLayout.vue";
 import ChatbotInteractionsView from "../views/Admin/ChatbotInteractionsView.vue";
+import ProfessionalsView from "../views/Admin/ProfessionalsView.vue";
+import AlertsView from "../views/Admin/AlertsView.vue";
+import StudentsView from "../views/Admin/StudentsView.vue";
+import AppointmentsView from "../views/Admin/AppointmentsView.vue";
+import ResourcesView from "../views/Admin/ResourcesView.vue";
+import ChatLaisoView from "../views/Admin/ChatLaisoView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -56,6 +62,36 @@ const router = createRouter({
           path: "interactions",
           name: "admin-interactions",
           component: ChatbotInteractionsView,
+        },
+        {
+          path: "professionals",
+          name: "admin-professionals",
+          component: ProfessionalsView,
+        },
+        {
+          path: "alerts",
+          name: "admin-alerts",
+          component: AlertsView,
+        },
+        {
+          path: "students",
+          name: "admin-students",
+          component: StudentsView,
+        },
+        {
+          path: "appointments",
+          name: "admin-appointments",
+          component: AppointmentsView,
+        },
+        {
+          path: "resources",
+          name: "admin-resources",
+          component: ResourcesView,
+        },
+        {
+          path: "chat-laiso",
+          name: "admin-chat-laiso",
+          component: ChatLaisoView,
         }
       ]
     },
