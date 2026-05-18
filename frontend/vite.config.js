@@ -14,36 +14,11 @@ export default defineConfig({
     port: 3000,
     strictPort: true,
     proxy: {
-      // Proxy para autenticación y API de Laravel
-      "/login": {
-        target: "http://127.0.0.1:8081",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/login/, "/login"),
-      },
-      "/logout": {
-        target: "http://127.0.0.1:8081",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/logout/, "/logout"),
-      },
-      "/sanctum": {
-        target: "http://127.0.0.1:8081",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/sanctum/, "/sanctum"),
-      },
       "/api": {
-        target: "http://127.0.0.1:8081",
+        target: "http://127.0.0.1:8000",
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, "/api"),
-      },
-      "/admin": {
-        target: "http://127.0.0.1:8081",
-        changeOrigin: true,
-        secure: false,
-        rewrite: (path) => path.replace(/^\/admin/, "/admin"),
       },
     },
   },

@@ -38,7 +38,7 @@ async function handleLogin() {
       return;
     }
 
-    const res = await axios.post('http://127.0.0.1:8000/api/login', {
+    const res = await axios.post('/api/login', {
       email,
       password
     });
@@ -55,7 +55,7 @@ async function handleLogin() {
       showConfirmButton: false,
       timer: 1500
     }).then(() => {
-      window.location.href = '/'; // Redirigir al inicio o dashboard
+      window.location.href = '/admin/dashboard'; // Redirigir al Dashboard Médico
     });
     
   } catch (err) {

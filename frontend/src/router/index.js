@@ -26,6 +26,9 @@ import ElTypography from "../layouts/sections/elements/typography/TypographyView
 import BlogView from "../views/LandingPages/Blog/BlogView.vue";
 import ArticulosView from "../views/LandingPages/Articulos/ArticulosView.vue";
 import TestRapidoView from "../views/LandingPages/TestRapido/TestRapidoView.vue";
+import DashboardView from "../views/Admin/DashboardView.vue";
+import AdminLayout from "../layouts/AdminLayout.vue";
+import ChatbotInteractionsView from "../views/Admin/ChatbotInteractionsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +42,22 @@ const router = createRouter({
       path: "/pages/landing-pages/about-us",
       name: "about",
       component: AboutView,
+    },
+    {
+      path: "/admin",
+      component: AdminLayout,
+      children: [
+        {
+          path: "dashboard",
+          name: "admin-dashboard",
+          component: DashboardView,
+        },
+        {
+          path: "interactions",
+          name: "admin-interactions",
+          component: ChatbotInteractionsView,
+        }
+      ]
     },
     {
       path: "/pages/landing-pages/contact-us",
