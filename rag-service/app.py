@@ -6,8 +6,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from pathlib import Path
 
-# LangChain / Ollama
-from langchain_ollama import OllamaLLM, OllamaEmbeddings
+# LangChain / Gemini
+from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
@@ -46,9 +46,9 @@ os.environ["TESSDATA_PREFIX"] = r"C:\TrabajosU\Sistema-Burnout\rag-service\tessd
 # ENV
 # ======================================================
 load_dotenv()
-LLM_URL = os.getenv("LLM_URL", "http://localhost:11434")
-LLM_MODEL = os.getenv("LLM_MODEL", "llama3.2")
-EMBED_MODEL = os.getenv("EMBED_MODEL", "nomic-embed-text")
+GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+GEMINI_MODEL = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+GEMINI_EMBED_MODEL = os.getenv("GEMINI_EMBED_MODEL", "text-embedding-004")
 DB_HOST = os.getenv("DB_HOST", "127.0.0.1")
 DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
@@ -73,8 +73,8 @@ app.add_middleware(
 # ======================================================
 # MODELOS
 # ======================================================
-llm = OllamaLLM(model=LLM_MODEL, base_url=LLM_URL)
-embeddings = OllamaEmbeddings(model=EMBED_MODEL, base_url=LLM_URL)
+llm = ChatGoogleGenerativeAI(model=GEMINI_MODEL, google_api_key=GOOGLE_API_KEY)
+embeddings = GoogleGenerativeAIEmbeddings(model=GEMINI_EMBED_MODEL, google_api_key=GOOGLE_API_KEY)
 
 # ======================================================
 # PROMPT PRINCIPAL (RESPUESTA DEL CHAT)
@@ -288,14 +288,15 @@ async def ingest(file: UploadFile = File(...)):
 @app.post("/ask")
 async def ask(payload: Query):
     try:
-        if retriever is None:
-            raise HTTPException(400, "Primero usa /ingest para cargar documentos.")
-
         session_id = payload.session_id
         logger.info(f"Nueva pregunta: {payload.query}")
 
-        # Recuperar contexto RAG
-        docs = retriever.invoke(payload.query)
+        if retriever is None:
+            logger.warning("No hay retriever configurado. Respondiendo sin contexto RAG.")
+            docs = []
+        else:
+            docs = retriever.invoke(payload.query)
+            
         context_text = "\n".join([d.page_content for d in docs])
 
         # Historial
@@ -334,7 +335,7 @@ async def ask(payload: Query):
             payload.query,
             json.dumps({"source": "fastapi"}),
             clean_answer,
-            json.dumps({"model": LLM_MODEL}),
+            json.dumps({"model": GEMINI_MODEL}),
             None,
             json.dumps({
                 "emotion": analysis["emotion"],
@@ -372,6 +373,8 @@ async def ask(payload: Query):
 
         return {"answer": clean_answer}
 
-    except Exception:
+    except HTTPException as http_exc:
+        raise http_exc
+    except Exception as e:
         traceback.print_exc()
-        raise HTTPException(500, "Error procesando la consulta.")
+        raise HTTPException(500, f"Error interno: {str(e)}")

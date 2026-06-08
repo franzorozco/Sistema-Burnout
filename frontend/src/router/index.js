@@ -35,6 +35,7 @@ import StudentsView from "../views/Admin/StudentsView.vue";
 import AppointmentsView from "../views/Admin/AppointmentsView.vue";
 import ResourcesView from "../views/Admin/ResourcesView.vue";
 import ChatLaisoView from "../views/Admin/ChatLaisoView.vue";
+import TrainingView from "../views/Admin/TrainingView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -92,6 +93,11 @@ const router = createRouter({
           path: "chat-laiso",
           name: "admin-chat-laiso",
           component: ChatLaisoView,
+        },
+        {
+          path: "training",
+          name: "admin-training",
+          component: TrainingView,
         }
       ]
     },

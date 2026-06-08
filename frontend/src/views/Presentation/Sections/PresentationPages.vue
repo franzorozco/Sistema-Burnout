@@ -40,7 +40,7 @@ import MaterialBadge from "../../../components/MaterialBadge.vue";
               <ExampleCard
                 class="shadow-lg"
                 image="https://images.pexels.com/photos/5722164/pexels-photo-5722164.jpeg"
-                route="/"
+                route="presentation"
                 style="
                   width: 100%;
                   height: 12cm;
@@ -53,7 +53,7 @@ import MaterialBadge from "../../../components/MaterialBadge.vue";
               <ExampleCard
                 class="shadow-lg"
                 image="https://images.pexels.com/photos/5452201/pexels-photo-5452201.jpeg"
-                route="/"
+                route="presentation"
                 style="
                   width: 100%;
                   height: 12cm;
@@ -68,14 +68,14 @@ import MaterialBadge from "../../../components/MaterialBadge.vue";
               <ExampleCard
                 classes="mt-5"
                 image="https://images.pexels.com/photos/4101143/pexels-photo-4101143.jpeg"
-                route="/"
+                route="presentation"
               />
             </div>
             <div class="col-md-6 mt-md-0 mt-5">
               <ExampleCard
                 classes="shadow-lg"
                 image="https://images.pexels.com/photos/7176026/pexels-photo-7176026.jpeg"
-                route="/"
+                route="presentation"
               />
             </div>
           </div>

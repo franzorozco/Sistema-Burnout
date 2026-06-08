@@ -76,6 +76,14 @@
               <span class="nav-link-text ms-1 font-weight-bold">Centro de Inteligencia</span>
             </RouterLink>
           </li>
+          <li class="nav-item">
+            <RouterLink class="nav-link text-dark menu-item-animate" to="/admin/training" active-class="bg-gradient-dynamic text-white shadow-dynamic active-link">
+              <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center icon-wrapper">
+                <i class="material-icons opacity-10">model_training</i>
+              </div>
+              <span class="nav-link-text ms-1 font-weight-bold">Entrenar Chatbot</span>
+            </RouterLink>
+          </li>
           <li class="nav-item mt-4">
             <h6 class="ps-4 ms-2 text-uppercase text-xs text-secondary font-weight-bolder opacity-8">Cuenta</h6>
           </li>

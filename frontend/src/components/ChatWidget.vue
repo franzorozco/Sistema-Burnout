@@ -12,8 +12,8 @@
         {{ currentGreeting }}
       </div>
       
-      <img v-if="!isOpen" src="/laiso_robot_final.png" style="width: 140px; height: 140px; object-fit: contain; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.3)); animation: greetMascot 4s ease-in-out infinite; transform-origin: bottom center;">
-      <div v-else style="width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(135deg, #00BCD4 0%, #2196F3 50%, #9C27B0 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(33, 150, 243, 0.4);">
+      <img v-if="!isOpen" src="/laiso_robot_final.png" style="width: 140px; height: 140px; object-fit: contain; filter: drop-shadow(0 15px 15px rgba(0,0,0,0.2)); animation: greetMascot 4s ease-in-out infinite; transform-origin: bottom center;">
+      <div v-else style="width: 65px; height: 65px; border-radius: 50%; background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%); display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0, 119, 182, 0.4); border: 2px solid white;">
         <i class="fas fa-times" style="color: white; font-size: 26px;"></i>
       </div>
     </button>
@@ -195,11 +195,13 @@ const sendMessage = async () => {
 }
 
 .chat-header {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+  background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
   padding: 20px;
   color: white;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 15px rgba(0, 119, 182, 0.2);
   z-index: 2;
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
 }
 
 .avatar-bot {
@@ -253,9 +255,10 @@ const sendMessage = async () => {
 }
 
 .user .message-content {
-  background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+  background: linear-gradient(135deg, #48cae4 0%, #0096c7 100%);
   color: white;
   border-bottom-right-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0, 150, 199, 0.2);
 }
 
 .bot .message-content {
@@ -263,6 +266,7 @@ const sendMessage = async () => {
   color: #334155;
   border: 1px solid #e2e8f0;
   border-bottom-left-radius: 4px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
 }
 
 .chat-footer {
@@ -287,15 +291,15 @@ const sendMessage = async () => {
 
 .chat-input:focus {
   background: white;
-  border-color: #6366f1;
-  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+  border-color: #00b4d8;
+  box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.15);
 }
 
 .send-btn {
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  background: #4f46e5;
+  background: linear-gradient(135deg, #00b4d8 0%, #0077b6 100%);
   color: white;
   border: none;
   cursor: pointer;
@@ -303,12 +307,12 @@ const sendMessage = async () => {
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 10px rgba(0, 119, 182, 0.3);
 }
 
 .send-btn:hover:not(:disabled) {
-  background: #4338ca;
   transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(0, 119, 182, 0.4);
 }
 
 .send-btn:active:not(:disabled) {
@@ -316,7 +320,8 @@ const sendMessage = async () => {
 }
 
 .send-btn:disabled {
-  background: #cbd5e1;
+  background: #e2e8f0;
+  color: #94a3b8;
   box-shadow: none;
   cursor: not-allowed;
 }

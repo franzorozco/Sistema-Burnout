@@ -1,5 +1,5 @@
 <script setup>
-import { ref, defineProps, defineEmits } from "vue";
+import { ref } from "vue";
 import MaterialTextArea from "../../../../components/MaterialTextArea.vue";
 import MaterialButton from "../../../../components/MaterialButton.vue";
 

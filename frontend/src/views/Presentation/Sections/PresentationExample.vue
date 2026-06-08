@@ -5,30 +5,6 @@ defineProps({
   data: {
     type: Array,
     required: true,
-    heading: {
-      type: String,
-      required: true,
-    },
-    description: {
-      type: String,
-      required: true,
-    },
-    items: {
-      type: Array,
-      required: true,
-      image: {
-        type: String,
-        required: true,
-      },
-      title: {
-        type: String,
-        required: true,
-      },
-      subtitle: {
-        type: String,
-        required: true,
-      },
-    },
   },
   col1: {
     type: String,

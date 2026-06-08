@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps } from "vue";
+
 import MaterialButton from "../../../../components/MaterialButton.vue";
 
 // Define los props que recibirá la tarjeta

@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps } from "vue";
+
 import MaterialButton from "../../../../components/MaterialButton.vue";
 
 // Recibimos los datos calculados desde la vista principal

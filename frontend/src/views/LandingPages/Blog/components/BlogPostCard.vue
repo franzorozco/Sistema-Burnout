@@ -1,5 +1,5 @@
 <script setup>
-import { defineProps, defineEmits } from "vue";
+
 import MaterialButton from "../../../../components/MaterialButton.vue";
 
 // Props y Emits
