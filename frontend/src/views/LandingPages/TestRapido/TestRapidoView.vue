@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue";
 import { Modal } from "bootstrap";
-import axios from "axios"; // <-- PASO 1: IMPORTAR AXIOS
+import axios from "axios";
 
 // --- Componentes ---
 import NavbarDefault from "../../../examples/navbars/NavbarDefault.vue";
@@ -11,44 +11,66 @@ import MaterialButton from "../../../components/MaterialButton.vue";
 import TestResultModal from "./components/TestResultModal.vue";
 
 // --- Lógica del Test ---
+const API_URL = "http://127.0.0.1:8000/api";
 
-// 1. Definición de Preguntas
-const questions = ref([
-  { id: 1, text: "Me siento emocionalmente agotado/a por mi trabajo/estudio." },
-  { id: 2, text: "Siento que me he vuelto más cínico/a o insensible." },
-  { id: 3, text: "Me cuesta relajarme después de un día de trabajo/estudio." },
-  { id: 4, text: "Siento que no estoy logrando nada valioso." },
-  { id: 5, text: "Me irrito fácilmente con colegas, pacientes o profesores." },
-  { id: 6, text: "Tengo dificultades para concentrarme." },
-  { id: 7, text: "Siento falta de energía para empezar el día." },
-  {
-    id: 8,
-    text: "Me siento desvinculado/a de actividades que antes disfrutaba.",
-  },
-  { id: 9, text: "Siento que mis esfuerzos no son reconocidos." },
-  { id: 10, text: "Tengo problemas para dormir debido al estrés." },
-]);
+// Estado del cuestionario (se carga dinámicamente desde la BD)
+const questionnaire = ref(null);
+const questions = ref([]);
+const likertOptions = ref([]);
+const loadingTest = ref(true);
+const loadError = ref(false);
 
-const likertOptions = ref([
-  { label: "Nunca", value: 1 },
-  { label: "Casi Nunca", value: 2 },
-  { label: "A Veces", value: 3 },
-  { label: "Casi Siempre", value: 4 },
-  { label: "Siempre", value: 5 },
-]);
-
-// 2. Estado para las respuestas (El JSON 'raw' de tu DB)
+// Estado para las respuestas
 const answers = ref({});
 
-// 3. Estado para los resultados (El Pop-up)
+// Estado para los resultados
 const score = ref(0);
 const resultStatus = ref("");
 const resultEmoji = ref("");
 
-// 4. Verificación de Formulario Completo
+// Calcular puntaje máximo dinámicamente según la cantidad de preguntas
+const maxScore = computed(() => questions.value.length * 5);
+
+// Verificación de Formulario Completo
 const isComplete = computed(() => {
-  return Object.keys(answers.value).length === questions.value.length;
+  return questions.value.length > 0 && Object.keys(answers.value).length === questions.value.length;
 });
+
+// Cargar cuestionario fijado desde la API
+const loadPinnedTest = async () => {
+  loadingTest.value = true;
+  loadError.value = false;
+  try {
+    const res = await axios.get(`${API_URL}/questionnaires/pinned`);
+    const data = res.data.data;
+    questionnaire.value = data;
+    questions.value = (data.items || []).map((item) => ({
+      id: item.id,
+      text: item.question_text,
+      order: item.item_order,
+    }));
+    // Extraer opciones Likert del primer item (son iguales para todos)
+    if (data.items && data.items.length > 0 && data.items[0].choices) {
+      likertOptions.value = data.items[0].choices
+        .sort((a, b) => a.choice_order - b.choice_order)
+        .map((c) => ({ label: c.label, value: parseInt(c.value) }));
+    } else {
+      // Fallback por si no hay choices
+      likertOptions.value = [
+        { label: "Nunca", value: 1 },
+        { label: "Casi Nunca", value: 2 },
+        { label: "A Veces", value: 3 },
+        { label: "Casi Siempre", value: 4 },
+        { label: "Siempre", value: 5 },
+      ];
+    }
+  } catch (error) {
+    console.error("Error cargando el test:", error);
+    loadError.value = true;
+  } finally {
+    loadingTest.value = false;
+  }
+};
 
 // Función para resetear el formulario
 const resetForm = () => {
@@ -61,22 +83,23 @@ const resetForm = () => {
 let modalInstance = null;
 const resultModalRef = ref(null);
 
-// 5. Función de Envío
+// Función de Envío
 const submitTest = async () => {
   if (!isComplete.value) return;
 
-  // 5.1. Calcular Puntaje (summary_score)
+  // Calcular Puntaje
   let totalScore = 0;
   for (const qId in answers.value) {
     totalScore += answers.value[qId];
   }
   score.value = totalScore;
 
-  // 5.2. Determinar Resultado (Carita y Estado)
-  if (totalScore <= 20) {
+  // Determinar Resultado dinámicamente basado en el puntaje máximo
+  const pctScore = totalScore / maxScore.value;
+  if (pctScore <= 0.4) {
     resultStatus.value = "Te encuentras Bien";
     resultEmoji.value = "😃";
-  } else if (totalScore <= 35) {
+  } else if (pctScore <= 0.7) {
     resultStatus.value = "Atención: Signos de Estrés";
     resultEmoji.value = "😐";
   } else {
@@ -84,41 +107,22 @@ const submitTest = async () => {
     resultEmoji.value = "😥";
   }
 
-  // 5.3. Preparar el Payload para Laravel
+  // Preparar Payload para Laravel
   const payload = {
-    questionnaire_id: 1, // ID del Test (debe existir en la tabla 'questionnaires')
+    questionnaire_id: questionnaire.value.id,
     student_profile_id: null,
     user_id: null,
     summary_score: score.value,
     raw: answers.value,
   };
 
-  // --- PASO 2: CONEXIÓN AL BACKEND (ACTIVADA) ---
-  console.log("Enviando payload a Laravel:", payload);
-
   try {
-    // ⚠️ ¡CAMBIA ESTA LÍNEA!
-    // Esta debe ser la URL donde corre tu backend (usualmente localhost:8000)
-    const API_URL = "http://127.0.0.1:8000/api/questionnaire-responses";
-
-    // Enviamos los datos usando axios
-    const response = await axios.post(API_URL, payload);
-
-    console.log("Respuesta guardada:", response.data);
+    await axios.post(`${API_URL}/questionnaire-responses`, payload);
   } catch (error) {
-    // Si Laravel devuelve un error (ej. 422 por validación), lo veremos aquí
-    console.error(
-      "Error al guardar la respuesta:",
-      error.response?.data || error.message
-    );
-    // Mostramos un error al usuario
-    alert(
-      "Error: No se pudo guardar tu respuesta. Revisa la consola (F12) para más detalles."
-    );
+    console.error("Error al guardar:", error.response?.data || error.message);
   }
-  // --- FIN DE LA CONEXIÓN ---
 
-  // 5.4. Mostrar el Pop-up de Resultados (esto se ejecuta si el envío fue exitoso o no)
+  // Mostrar Modal de Resultados
   if (modalInstance) {
     modalInstance.show();
   }
@@ -127,9 +131,12 @@ const submitTest = async () => {
 // --- Manejo de la página ---
 const body = document.getElementsByTagName("body")[0];
 
-onMounted(() => {
+onMounted(async () => {
   body.classList.add("test-page");
   body.classList.add("bg-gray-200");
+
+  // Cargar preguntas dinámicamente
+  await loadPinnedTest();
 
   resultModalRef.value = document.getElementById("resultModal");
   if (resultModalRef.value) {

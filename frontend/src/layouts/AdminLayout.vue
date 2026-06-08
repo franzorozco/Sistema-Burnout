@@ -69,6 +69,14 @@
             </RouterLink>
           </li>
           <li class="nav-item">
+            <RouterLink class="nav-link text-dark menu-item-animate" to="/admin/test-config" active-class="bg-gradient-dynamic text-white shadow-dynamic active-link">
+              <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center icon-wrapper">
+                <i class="material-icons opacity-10">quiz</i>
+              </div>
+              <span class="nav-link-text ms-1">Gestión Test</span>
+            </RouterLink>
+          </li>
+          <li class="nav-item">
             <RouterLink class="nav-link text-dark menu-item-animate" to="/admin/chat-laiso" active-class="bg-gradient-dynamic text-white shadow-dynamic active-link">
               <div class="text-dark text-center me-2 d-flex align-items-center justify-content-center icon-wrapper">
                 <i class="material-icons opacity-10">psychology</i>

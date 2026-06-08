@@ -1,6 +1,6 @@
 <?php
 
-namespace App\HttpControllers\Api;
+namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\QuestionnaireResponse; // Importa el modelo

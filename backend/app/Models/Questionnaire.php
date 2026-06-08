@@ -33,7 +33,16 @@ class Questionnaire extends Model
      *
      * @var array<int, string>
      */
-    protected $fillable = ['code', 'title', 'description', 'version', 'created_by'];
+    protected $fillable = ['code', 'title', 'description', 'version', 'is_pinned', 'created_by'];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'is_pinned' => 'boolean',
+    ];
 
     public function items()
     {
@@ -52,7 +61,7 @@ class Questionnaire extends Model
      */
     public function questionnaireItems()
     {
-        return $this->hasMany(\App\Models\QuestionnaireItem::class, 'id', 'questionnaire_id');
+        return $this->hasMany(\App\Models\QuestionnaireItem::class);
     }
     
     /**
@@ -60,7 +69,7 @@ class Questionnaire extends Model
      */
     public function questionnaireResponses()
     {
-        return $this->hasMany(\App\Models\QuestionnaireResponse::class, 'id', 'questionnaire_id');
+        return $this->hasMany(\App\Models\QuestionnaireResponse::class);
     }
     
 }
