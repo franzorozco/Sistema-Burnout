@@ -1,0 +1,14 @@
+Importar base de datos a phpmyadmin
+batabase: Burnout SQL.sql
+cd frontend > npm run dev
+cd backend > php artisan serve
+Sacar clabe API de: https://aistudio.google.com/app/api-keys?project=gen-lang-client-0327016510
+posteriormente ingresar la clave a: Burnout\rag-service\.env
+
+// .env de rag-service (solo copia esto en el .env de rag GGs)
+GOOGLE_API_KEY=
+GEMINI_MODEL=gemini-2.5-flash
+GEMINI_EMBED_MODEL=gemini-embedding-2
+//
+
+cd rag-service > .\venv_rag\Scripts\python.exe -m uvicorn app:app --port 8001 --reload

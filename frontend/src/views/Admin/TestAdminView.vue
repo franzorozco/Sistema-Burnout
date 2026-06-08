@@ -69,56 +69,85 @@ onMounted(async () => {
 });
 
 // ==================== QUESTIONS CRUD ====================
-const addQuestion = async () => {
-  const { value: text } = await Swal.fire({
-    title: "Nueva Pregunta",
-    input: "textarea",
-    inputLabel: "Texto de la pregunta",
-    inputPlaceholder: "Ej: ¿Con qué frecuencia sientes agotamiento emocional?",
-    showCancelButton: true,
-    confirmButtonText: "Agregar",
-    cancelButtonText: "Cancelar",
-    confirmButtonColor: "#0077b6",
-    inputValidator: (val) => (!val ? "Escribe la pregunta" : undefined),
-  });
-  if (!text) return;
-  try {
-    const token = getToken();
-    await axios.post(
-      `${API}/questionnaires/${questionnaire.value.id}/items`,
-      { question_text: text, response_type: "likert" },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    await loadQuestionnaire();
-    Swal.fire({ icon: "success", title: "Pregunta agregada", timer: 1500, showConfirmButton: false });
-  } catch (e) {
-    Swal.fire("Error", "No se pudo agregar la pregunta", "error");
-  }
+const showQuestionModal = ref(false);
+const editingQuestion = ref({
+  id: null,
+  question_text: "",
+  response_type: "likert",
+  choices: []
+});
+
+const defaultLikert = [
+  { label: "Nunca", value: "1" },
+  { label: "Casi Nunca", value: "2" },
+  { label: "A Veces", value: "3" },
+  { label: "Casi Siempre", value: "4" },
+  { label: "Siempre", value: "5" },
+];
+
+const openAddQuestionModal = () => {
+  editingQuestion.value = {
+    id: null,
+    question_text: "",
+    response_type: "likert",
+    choices: [...defaultLikert]
+  };
+  showQuestionModal.value = true;
 };
 
-const editQuestion = async (item) => {
-  const { value: text } = await Swal.fire({
-    title: `Editar Pregunta #${item.item_order}`,
-    input: "textarea",
-    inputValue: item.question_text,
-    showCancelButton: true,
-    confirmButtonText: "Guardar",
-    cancelButtonText: "Cancelar",
-    confirmButtonColor: "#0077b6",
-    inputValidator: (val) => (!val ? "La pregunta no puede estar vacía" : undefined),
-  });
-  if (!text || text === item.question_text) return;
+const openEditQuestionModal = (item) => {
+  editingQuestion.value = {
+    id: item.id,
+    question_text: item.question_text,
+    response_type: item.response_type,
+    choices: item.choices ? item.choices.map(c => ({ label: c.label, value: c.value })) : []
+  };
+  showQuestionModal.value = true;
+};
+
+const closeQuestionModal = () => {
+  showQuestionModal.value = false;
+};
+
+const addChoice = () => {
+  editingQuestion.value.choices.push({ label: "", value: "" });
+};
+
+const removeChoice = (index) => {
+  editingQuestion.value.choices.splice(index, 1);
+};
+
+const saveQuestion = async () => {
+  if (!editingQuestion.value.question_text.trim()) {
+    Swal.fire("Error", "La pregunta no puede estar vacía", "error");
+    return;
+  }
+  
+  if (['likert', 'opcion'].includes(editingQuestion.value.response_type) && editingQuestion.value.choices.length === 0) {
+    Swal.fire("Error", "Debe agregar al menos una opción", "error");
+    return;
+  }
+
+  const token = getToken();
   try {
-    const token = getToken();
-    await axios.put(
-      `${API}/questionnaires/${questionnaire.value.id}/items/${item.id}`,
-      { question_text: text },
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+    const payload = {
+      question_text: editingQuestion.value.question_text,
+      response_type: editingQuestion.value.response_type,
+      choices: ['likert', 'opcion'].includes(editingQuestion.value.response_type) ? editingQuestion.value.choices : []
+    };
+
+    if (editingQuestion.value.id) {
+      await axios.put(`${API}/questionnaires/${questionnaire.value.id}/items/${editingQuestion.value.id}`, payload, { headers: { Authorization: `Bearer ${token}` } });
+      Swal.fire({ icon: "success", title: "Pregunta actualizada", timer: 1500, showConfirmButton: false });
+    } else {
+      await axios.post(`${API}/questionnaires/${questionnaire.value.id}/items`, payload, { headers: { Authorization: `Bearer ${token}` } });
+      Swal.fire({ icon: "success", title: "Pregunta agregada", timer: 1500, showConfirmButton: false });
+    }
+    
     await loadQuestionnaire();
-    Swal.fire({ icon: "success", title: "Pregunta actualizada", timer: 1500, showConfirmButton: false });
+    closeQuestionModal();
   } catch (e) {
-    Swal.fire("Error", "No se pudo actualizar", "error");
+    Swal.fire("Error", "No se pudo guardar la pregunta", "error");
   }
 };
 
@@ -274,7 +303,7 @@ const maxScore = computed(() => totalQuestions.value * 5);
               </h5>
               <p class="text-sm text-secondary mb-0">Escala Likert 1-5 · Puntaje máximo: {{ maxScore }}</p>
             </div>
-            <button class="btn bg-gradient-primary shadow-primary mb-0 hover-scale" @click="addQuestion">
+            <button class="btn bg-gradient-primary shadow-primary mb-0 hover-scale" @click="openAddQuestionModal">
               <i class="material-icons me-1" style="font-size: 16px; vertical-align: middle">add_circle</i>
               Agregar Pregunta
             </button>
@@ -310,7 +339,7 @@ const maxScore = computed(() => totalQuestions.value * 5);
                       <span class="text-sm text-secondary">{{ item.choices ? item.choices.length : 0 }}</span>
                     </td>
                     <td class="text-center">
-                      <button class="btn btn-link text-primary p-1 mb-0" @click="editQuestion(item)" title="Editar">
+                      <button class="btn btn-link text-primary p-1 mb-0" @click="openEditQuestionModal(item)" title="Editar">
                         <i class="material-icons" style="font-size: 20px">edit</i>
                       </button>
                       <button class="btn btn-link text-danger p-1 mb-0" @click="deleteQuestion(item)" title="Eliminar">
@@ -451,6 +480,62 @@ const maxScore = computed(() => totalQuestions.value * 5);
         </div>
       </div>
     </template>
+
+    <!-- Modal para Agregar/Editar Pregunta -->
+    <div v-if="showQuestionModal" class="custom-modal-overlay d-flex align-items-center justify-content-center fade-in">
+      <div class="custom-modal-card card shadow-lg border-0 w-100" style="max-width: 600px;">
+        <div class="card-header bg-gradient-primary p-3 d-flex justify-content-between align-items-center">
+          <h5 class="text-white mb-0">{{ editingQuestion.id ? 'Editar Pregunta' : 'Nueva Pregunta' }}</h5>
+          <button class="btn-close btn-close-white" @click="closeQuestionModal"></button>
+        </div>
+        <div class="card-body p-4" style="max-height: 70vh; overflow-y: auto;">
+          <!-- Texto de la pregunta -->
+          <div class="mb-3">
+            <label class="form-label text-dark font-weight-bold">Texto de la pregunta</label>
+            <textarea class="form-control border px-3 py-2" v-model="editingQuestion.question_text" rows="3" placeholder="Escribe aquí la pregunta..."></textarea>
+          </div>
+          
+          <!-- Tipo de respuesta -->
+          <div class="mb-3">
+            <label class="form-label text-dark font-weight-bold">Tipo de Respuesta</label>
+            <select class="form-select border px-3 py-2" v-model="editingQuestion.response_type">
+              <option value="likert">Escala Likert (Opciones con puntaje)</option>
+              <option value="opcion">Opción Múltiple (Radio buttons)</option>
+              <option value="texto">Texto Abierto</option>
+              <option value="numero">Número</option>
+              <option value="booleano">Booleano (Sí/No)</option>
+            </select>
+          </div>
+
+          <!-- Opciones dinámicas (solo para likert o opcion) -->
+          <div v-if="['likert', 'opcion'].includes(editingQuestion.response_type)">
+            <div class="d-flex justify-content-between align-items-center mb-2 mt-4">
+              <label class="form-label text-dark font-weight-bold mb-0">Opciones de Respuesta</label>
+              <button class="btn btn-sm btn-outline-primary mb-0 py-1 px-2" @click="addChoice">
+                <i class="material-icons" style="font-size: 14px; vertical-align: middle;">add</i> Agregar Opción
+              </button>
+            </div>
+            
+            <div v-for="(choice, index) in editingQuestion.choices" :key="index" class="d-flex gap-2 mb-2 align-items-center bg-light p-2 rounded">
+              <span class="text-secondary font-weight-bold" style="width: 20px;">{{ index + 1 }}.</span>
+              <input type="text" class="form-control border px-2 py-1 bg-white" placeholder="Etiqueta (Ej. Casi siempre)" v-model="choice.label">
+              <input type="text" class="form-control border px-2 py-1 bg-white" placeholder="Valor (Ej. 4)" v-model="choice.value" style="width: 100px;">
+              <button class="btn btn-link text-danger mb-0 p-1" @click="removeChoice(index)">
+                <i class="material-icons">delete</i>
+              </button>
+            </div>
+            
+            <p v-if="editingQuestion.choices.length === 0" class="text-sm text-danger mt-2">
+              Debes agregar al menos una opción.
+            </p>
+          </div>
+        </div>
+        <div class="card-footer bg-light p-3 d-flex justify-content-end gap-2">
+          <button class="btn btn-outline-secondary mb-0" @click="closeQuestionModal">Cancelar</button>
+          <button class="btn bg-gradient-primary mb-0" @click="saveQuestion">Guardar Cambios</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -499,4 +584,20 @@ const maxScore = computed(() => totalQuestions.value * 5);
 .premium-table td { border-bottom: 1px solid rgba(0,0,0,0.03); }
 .hover-scale { transition: transform 0.2s; }
 .hover-scale:hover { transform: scale(1.05); }
+
+/* Modal Custom Styles */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(4px);
+  z-index: 1050;
+}
+.custom-modal-card {
+  border-radius: 12px;
+  overflow: hidden;
+}
+.form-select {
+  appearance: auto;
+}
 </style>

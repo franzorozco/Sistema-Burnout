@@ -28,12 +28,21 @@ const score = ref(0);
 const resultStatus = ref("");
 const resultEmoji = ref("");
 
-// Calcular puntaje máximo dinámicamente según la cantidad de preguntas
-const maxScore = computed(() => questions.value.length * 5);
+// Calcular puntaje máximo dinámicamente según la cantidad de preguntas puntuables
+const maxScore = computed(() => {
+  let total = 0;
+  questions.value.forEach(q => {
+    if (['likert', 'opcion', 'booleano'].includes(q.type)) {
+      total += 5; // Asumimos max 5 para simplificar en el frontend público actual
+    }
+  });
+  return total === 0 ? 10 : total; // Fallback
+});
 
 // Verificación de Formulario Completo
 const isComplete = computed(() => {
-  return questions.value.length > 0 && Object.keys(answers.value).length === questions.value.length;
+  if (questions.value.length === 0) return false;
+  return questions.value.every(q => answers.value[q.id] !== undefined && answers.value[q.id] !== '');
 });
 
 // Cargar cuestionario fijado desde la API
@@ -48,22 +57,9 @@ const loadPinnedTest = async () => {
       id: item.id,
       text: item.question_text,
       order: item.item_order,
+      type: item.response_type || 'likert',
+      choices: item.choices ? item.choices.map(c => ({ label: c.label, value: c.value })) : []
     }));
-    // Extraer opciones Likert del primer item (son iguales para todos)
-    if (data.items && data.items.length > 0 && data.items[0].choices) {
-      likertOptions.value = data.items[0].choices
-        .sort((a, b) => a.choice_order - b.choice_order)
-        .map((c) => ({ label: c.label, value: parseInt(c.value) }));
-    } else {
-      // Fallback por si no hay choices
-      likertOptions.value = [
-        { label: "Nunca", value: 1 },
-        { label: "Casi Nunca", value: 2 },
-        { label: "A Veces", value: 3 },
-        { label: "Casi Siempre", value: 4 },
-        { label: "Siempre", value: 5 },
-      ];
-    }
   } catch (error) {
     console.error("Error cargando el test:", error);
     loadError.value = true;
@@ -87,10 +83,11 @@ const resultModalRef = ref(null);
 const submitTest = async () => {
   if (!isComplete.value) return;
 
-  // Calcular Puntaje
+  // Calcular Puntaje (solo valores numéricos)
   let totalScore = 0;
   for (const qId in answers.value) {
-    totalScore += answers.value[qId];
+    const val = parseFloat(answers.value[qId]);
+    if (!isNaN(val)) totalScore += val;
   }
   score.value = totalScore;
 
@@ -203,30 +200,33 @@ onUnmounted(() => {
                   {{ index + 1 }}. {{ question.text }}
                 </p>
 
-                <div
-                  class="d-flex justify-content-between flex-wrap"
-                  role="group"
-                >
-                  <div
-                    v-for="option in likertOptions"
-                    :key="option.value"
-                    class="form-check form-check-inline mx-2"
-                  >
-                    <input
-                      class="form-check-input"
-                      type="radio"
-                      :name="`q${question.id}`"
-                      :id="`q${question.id}_${option.value}`"
-                      :value="option.value"
-                      v-model.number="answers[question.id]"
-                      required
-                    />
-                    <label
-                      class="form-check-label"
-                      :for="`q${question.id}_${option.value}`"
-                    >
-                      {{ option.label }}
-                    </label>
+                <!-- Likert / Opcion -->
+                <div v-if="['likert', 'opcion'].includes(question.type)" class="d-flex justify-content-between flex-wrap" role="group">
+                  <div v-for="option in question.choices" :key="option.value" class="form-check form-check-inline mx-2">
+                    <input class="form-check-input" type="radio" :name="`q${question.id}`" :id="`q${question.id}_${option.value}`" :value="option.value" v-model="answers[question.id]" required />
+                    <label class="form-check-label" :for="`q${question.id}_${option.value}`">{{ option.label }}</label>
+                  </div>
+                </div>
+
+                <!-- Texto -->
+                <div v-else-if="question.type === 'texto'">
+                  <textarea class="form-control border px-3 py-2" rows="3" v-model="answers[question.id]" placeholder="Escribe tu respuesta aquí..." required></textarea>
+                </div>
+
+                <!-- Numero -->
+                <div v-else-if="question.type === 'numero'">
+                  <input type="number" class="form-control border px-3 py-2" v-model.number="answers[question.id]" placeholder="Ingresa un valor numérico" required />
+                </div>
+
+                <!-- Booleano -->
+                <div v-else-if="question.type === 'booleano'" class="d-flex gap-4">
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" :name="`q${question.id}`" :id="`q${question.id}_si`" value="1" v-model="answers[question.id]" required />
+                    <label class="form-check-label" :for="`q${question.id}_si`">Sí</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" :name="`q${question.id}`" :id="`q${question.id}_no`" value="0" v-model="answers[question.id]" required />
+                    <label class="form-check-label" :for="`q${question.id}_no`">No</label>
                   </div>
                 </div>
               </div>

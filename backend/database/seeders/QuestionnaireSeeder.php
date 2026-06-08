@@ -14,32 +14,30 @@ class QuestionnaireSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Create or update the questionnaire
+        // 1. Create the questionnaire
         $questionnaire = Questionnaire::updateOrCreate(
             ['code' => 'BURNOUT_RAPIDO'],
             [
                 'title' => 'Test Rápido de Burnout',
-                'description' => 'Evaluación rápida de 10 preguntas para detectar signos de burnout académico.',
+                'description' => 'Evaluación rápida de 10 preguntas para medir tu nivel de estrés y agotamiento.',
                 'version' => '1.0',
                 'is_pinned' => true,
             ]
         );
 
-        // 2. Define the 10 questions
         $questions = [
-            '¿Con qué frecuencia sientes agotamiento emocional por tus estudios?',
-            '¿Sientes que tus estudios han dejado de tener sentido?',
-            '¿Te resulta difícil relajarte después de un día de clases?',
-            '¿Sientes que no logras lo suficiente a pesar de tu esfuerzo?',
-            '¿Experimentas irritabilidad o frustración frecuente?',
-            '¿Tienes dificultades para concentrarte en tus tareas?',
-            '¿Sientes que tu energía se agota rápidamente?',
-            '¿Te sientes desconectado/a de tus compañeros o actividades?',
-            '¿Sientes que tu esfuerzo no es reconocido?',
-            '¿Tienes problemas para dormir o descansas mal?',
+            "¿Con qué frecuencia sientes agotamiento emocional por tus estudios?",
+            "¿Sientes que tus estudios han dejado de tener sentido?",
+            "¿Te resulta difícil relajarte después de un día de clases?",
+            "¿Sientes que no logras lo suficiente a pesar de tu esfuerzo?",
+            "¿Experimentas irritabilidad o frustración frecuente?",
+            "¿Tienes dificultades para concentrarte en tus tareas?",
+            "¿Sientes que tu energía se agota rápidamente?",
+            "¿Te sientes desconectado/a de tus compañeros o actividades?",
+            "¿Sientes que tu esfuerzo no es reconocido?",
+            "¿Tienes problemas para dormir o descansas mal?",
         ];
 
-        // 3. Likert choices definition
         $likertChoices = [
             ['choice_order' => 1, 'value' => '1', 'label' => 'Nunca'],
             ['choice_order' => 2, 'value' => '2', 'label' => 'Casi Nunca'],
@@ -48,31 +46,21 @@ class QuestionnaireSeeder extends Seeder
             ['choice_order' => 5, 'value' => '5', 'label' => 'Siempre'],
         ];
 
-        // 4. Create items and choices
-        foreach ($questions as $index => $questionText) {
-            $item = QuestionnaireItem::updateOrCreate(
-                [
+        // Ensure we don't duplicate items if they already exist
+        if ($questionnaire->items()->count() === 0) {
+            foreach ($questions as $index => $text) {
+                // 2. Create the questionnaire items
+                $item = QuestionnaireItem::create([
                     'questionnaire_id' => $questionnaire->id,
                     'item_order' => $index + 1,
-                ],
-                [
-                    'question_text' => $questionText,
+                    'question_text' => $text,
                     'response_type' => 'likert',
-                ]
-            );
+                ]);
 
-            // Create choices for each item
-            foreach ($likertChoices as $choice) {
-                QuestionnaireChoice::updateOrCreate(
-                    [
-                        'item_id' => $item->id,
-                        'choice_order' => $choice['choice_order'],
-                    ],
-                    [
-                        'value' => $choice['value'],
-                        'label' => $choice['label'],
-                    ]
-                );
+                // 3. Create the questionnaire choices
+                foreach ($likertChoices as $choice) {
+                    QuestionnaireChoice::create(array_merge($choice, ['item_id' => $item->id]));
+                }
             }
         }
     }

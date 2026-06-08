@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Questionnaire;
+use App\Models\QuestionnaireItem;
+use App\Models\QuestionnaireChoice;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\QuestionnaireRequest;
@@ -17,7 +19,10 @@ class QuestionnaireController extends Controller
      */
     public function index(Request $request): View
     {
-        $questionnaires = Questionnaire::paginate();
+        $questionnaires = Questionnaire::withCount(['items', 'questionnaireResponses'])
+            ->orderBy('is_pinned', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->paginate();
 
         return view('admin.questionnaire.index', compact('questionnaires'))
             ->with('i', ($request->input('page', 1) - 1) * $questionnaires->perPage());
@@ -29,6 +34,8 @@ class QuestionnaireController extends Controller
     public function create(): View
     {
         $questionnaire = new Questionnaire();
+        $questionnaire->version = '1.0';
+        $questionnaire->is_pinned = false;
         $users = User::all();
         return view('admin.questionnaire.create', compact('questionnaire', 'users'));
     }
@@ -38,10 +45,16 @@ class QuestionnaireController extends Controller
      */
     public function store(QuestionnaireRequest $request): RedirectResponse
     {
-        Questionnaire::create($request->validated());
+        $data = $request->validated();
+        $data['code'] = strtoupper(str_replace(' ', '_', $data['title'])) . '_' . rand(100, 999);
+        
+        $questionnaire = Questionnaire::create($data);
+        
+        // Guardar items si se enviaron
+        $this->saveItems($questionnaire, $request->input('items', []));
 
         return Redirect::route('admin.questionnaires.index')
-            ->with('success', 'Questionnaire created successfully.');
+            ->with('success', 'Cuestionario creado exitosamente.');
     }
 
     /**
@@ -49,7 +62,9 @@ class QuestionnaireController extends Controller
      */
     public function show($id): View
     {
-        $questionnaire = Questionnaire::find($id);
+        $questionnaire = Questionnaire::with(['items' => function($query) {
+            $query->orderBy('item_order')->with('choices');
+        }])->findOrFail($id);
 
         return view('admin.questionnaire.show', compact('questionnaire'));
     }
@@ -59,9 +74,23 @@ class QuestionnaireController extends Controller
      */
     public function edit($id): View
     {
-        $questionnaire = Questionnaire::find($id);
+        $questionnaire = Questionnaire::with(['items' => function($query) {
+            $query->orderBy('item_order')->with('choices');
+        }])->findOrFail($id);
+        
+        $items = $questionnaire->items->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'question_text' => $item->question_text,
+                'response_type' => $item->response_type,
+                'item_order' => $item->item_order,
+                'choices' => $item->choices->map(fn($c) => ['id' => $c->id, 'label' => $c->label, 'value' => $c->value])->toArray(),
+                'meta' => json_decode($item->meta, true),
+            ];
+        })->toArray();
+
         $users = User::all();
-        return view('admin.questionnaire.edit', compact('questionnaire', 'users'));
+        return view('admin.questionnaire.edit', compact('questionnaire', 'users', 'items'));
     }
 
     /**
@@ -69,10 +98,14 @@ class QuestionnaireController extends Controller
      */
     public function update(QuestionnaireRequest $request, Questionnaire $questionnaire): RedirectResponse
     {
-        $questionnaire->update($request->validated());
+        $data = $request->validated();
+        $questionnaire->update($data);
+        
+        // Guardar/actualizar items
+        $this->saveItems($questionnaire, $request->input('items', []));
 
         return Redirect::route('admin.questionnaires.index')
-            ->with('success', 'Questionnaire updated successfully');
+            ->with('success', 'Cuestionario actualizado exitosamente');
     }
 
     public function destroy($id): RedirectResponse
@@ -80,18 +113,15 @@ class QuestionnaireController extends Controller
         Questionnaire::find($id)->delete();
 
         return Redirect::route('admin.questionnaires.index')
-            ->with('success', 'Questionnaire deleted successfully');
+            ->with('success', 'Cuestionario eliminado exitosamente');
     }
 
     public function generateCode(Request $request)
     {
         $title = $request->input('title');
 
-        // Convertir a mayúsculas, reemplazar espacios por guiones
-        $baseCode = strtoupper(str_replace(' ', '-', $title));
-
-        // Opcional: agregar número aleatorio o consecutivo
-        $uniqueCode = $baseCode . '-' . rand(100, 999);
+        $baseCode = strtoupper(str_replace(' ', '_', $title));
+        $uniqueCode = $baseCode . '_' . rand(100, 999);
 
         return response()->json(['code' => $uniqueCode]);
     }
@@ -102,7 +132,6 @@ class QuestionnaireController extends Controller
         $questionnaireId = $request->input('questionnaire_id');
 
         if ($questionnaireId && $currentVersion) {
-            // Si ya existe, incrementar versión
             $parts = explode('.', $currentVersion);
 
             if (count($parts) == 2) {
@@ -110,15 +139,85 @@ class QuestionnaireController extends Controller
                 $minor = (int)$parts[1] + 1;
                 $newVersion = $major . '.' . $minor;
             } else {
-                $newVersion = $currentVersion . '.1'; // fallback
+                $newVersion = $currentVersion . '.1';
             }
         } else {
-            // Si es nuevo, empezar en 1.0
             $newVersion = "1.0";
         }
 
         return response()->json(['version' => $newVersion]);
     }
 
+    /**
+     * Guardar/actualizar items del cuestionario
+     */
+    private function saveItems(Questionnaire $questionnaire, array $itemsData): void
+    {
+        $sentItemIds = [];
 
+        foreach ($itemsData as $index => $itemData) {
+            $meta = [];
+
+            if (($itemData['response_type'] ?? '') === 'numero') {
+                $meta['min'] = $itemData['meta']['min'] ?? null;
+                $meta['max'] = $itemData['meta']['max'] ?? null;
+            } elseif (in_array($itemData['response_type'] ?? '', ['opcion', 'likert'])) {
+                $meta['choices'] = $itemData['choices'] ?? [];
+            }
+
+            if (!empty($itemData['id'])) {
+                $item = QuestionnaireItem::find($itemData['id']);
+                if ($item && $item->questionnaire_id === $questionnaire->id) {
+                    $item->update([
+                        'question_text' => $itemData['question_text'],
+                        'response_type' => $itemData['response_type'],
+                        'item_order' => $itemData['item_order'] ?? $index + 1,
+                        'meta' => json_encode($meta),
+                    ]);
+                }
+            } else {
+                $item = QuestionnaireItem::create([
+                    'questionnaire_id' => $questionnaire->id,
+                    'question_text' => $itemData['question_text'],
+                    'response_type' => $itemData['response_type'],
+                    'item_order' => $itemData['item_order'] ?? $index + 1,
+                    'meta' => json_encode($meta),
+                ]);
+            }
+
+            $sentItemIds[] = $item->id;
+            $sentChoiceIds = [];
+
+            if (isset($itemData['choices'])) {
+                foreach ($itemData['choices'] as $order => $choiceData) {
+                    if (!empty($choiceData['id']) && is_numeric($choiceData['id'])) {
+                        $choice = QuestionnaireChoice::find($choiceData['id']);
+                        if ($choice && $choice->item_id === $item->id) {
+                            $choice->update([
+                                'label' => $choiceData['label'],
+                                'value' => $choiceData['value'] ?? $choiceData['label'],
+                                'choice_order' => $order + 1,
+                            ]);
+                        }
+                    } else {
+                        $choice = QuestionnaireChoice::create([
+                            'item_id' => $item->id,
+                            'label' => $choiceData['label'],
+                            'value' => $choiceData['value'] ?? $choiceData['label'],
+                            'choice_order' => $order + 1,
+                        ]);
+                    }
+                    $sentChoiceIds[] = $choice->id;
+                }
+            }
+
+            QuestionnaireChoice::where('item_id', $item->id)
+                ->whereNotIn('id', $sentChoiceIds)
+                ->delete();
+        }
+
+        QuestionnaireItem::where('questionnaire_id', $questionnaire->id)
+            ->whereNotIn('id', $sentItemIds)
+            ->delete();
+    }
 }

@@ -36,7 +36,7 @@ class QuestionnaireController extends Controller
         return response()->json(['data' => $q]);
     }
 
-    // GET /api/questionnaires/{id} - get one with items+choices
+    // GET /api/questionnaires/{id} - get one with items+choices  
     public function show($id): JsonResponse
     {
         $q = Questionnaire::with(['items' => function($query) {
@@ -94,16 +94,31 @@ class QuestionnaireController extends Controller
         $request->validate([
             'question_text' => 'required|string',
             'response_type' => 'nullable|string',
+            'choices' => 'nullable|array',
+            'choices.*.value' => 'required|string',
+            'choices.*.label' => 'required|string',
         ]);
         $maxOrder = $q->items()->max('item_order') ?? 0;
+        $responseType = $request->response_type ?? 'likert';
+        
         $item = QuestionnaireItem::create([
             'questionnaire_id' => $q->id,
             'item_order' => $maxOrder + 1,
             'question_text' => $request->question_text,
-            'response_type' => $request->response_type ?? 'likert',
+            'response_type' => $responseType,
         ]);
-        // Create default Likert choices
-        if (($request->response_type ?? 'likert') === 'likert') {
+        
+        if (in_array($responseType, ['likert', 'opcion']) && $request->has('choices')) {
+            foreach ($request->choices as $index => $c) {
+                QuestionnaireChoice::create([
+                    'item_id' => $item->id,
+                    'choice_order' => $index + 1,
+                    'value' => $c['value'],
+                    'label' => $c['label'],
+                ]);
+            }
+        } elseif ($responseType === 'likert') {
+            // Default Likert choices
             $likert = [
                 ['choice_order' => 1, 'value' => '1', 'label' => 'Nunca'],
                 ['choice_order' => 2, 'value' => '2', 'label' => 'Casi Nunca'],
@@ -123,7 +138,31 @@ class QuestionnaireController extends Controller
     public function updateItem(Request $request, $id, $itemId): JsonResponse
     {
         $item = QuestionnaireItem::where('questionnaire_id', $id)->findOrFail($itemId);
+        
+        $request->validate([
+            'question_text' => 'required|string',
+            'response_type' => 'nullable|string',
+            'choices' => 'nullable|array',
+            'choices.*.value' => 'required|string',
+            'choices.*.label' => 'required|string',
+        ]);
+
         $item->update($request->only(['question_text', 'item_order', 'response_type']));
+        
+        if (in_array($item->response_type, ['likert', 'opcion']) && $request->has('choices')) {
+            $item->choices()->delete();
+            foreach ($request->choices as $index => $c) {
+                QuestionnaireChoice::create([
+                    'item_id' => $item->id,
+                    'choice_order' => $index + 1,
+                    'value' => $c['value'],
+                    'label' => $c['label'],
+                ]);
+            }
+        } elseif (!in_array($item->response_type, ['likert', 'opcion'])) {
+            $item->choices()->delete();
+        }
+
         $item->load('choices');
         return response()->json(['data' => $item]);
     }
